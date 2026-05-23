@@ -34,8 +34,8 @@ func NewGiantFont() lint.Lint {
 }
 
 const (
-	GIANT_FONT_SIZE_WARNING  = 27
-	GIANT_FONT_SIZE_CRITICAL = 30
+	GIANT_FONT_SIZE_WARNING  = 29
+	GIANT_FONT_SIZE_CRITICAL = 34
 )
 
 func (p GiantFont) Run(ctx context.Context, KaraData *karadata.KaraData) (report.Report, error) {
