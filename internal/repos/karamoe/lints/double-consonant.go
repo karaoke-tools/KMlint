@@ -63,6 +63,7 @@ var doubleConsonants = []string{
 	"pp",
 	"mm",
 	"rr",
+	"cc",
 }
 
 func (p DoubleConsonant) Run(ctx context.Context, KaraData *karadata.KaraData) (report.Report, error) {
