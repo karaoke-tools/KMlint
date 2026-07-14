@@ -56,7 +56,12 @@ var doubleConsonants = []string{
 	"gg",
 	"ss",
 	"zz",
-	"tt",
+	// avoid matching "mittsu" (みっつ) when pronounced "mi-its’"
+	"tta",
+	"tte",
+	"tti",
+	"tto",
+	"ttu",
 	"dd",
 	"nn",
 	"bb",
