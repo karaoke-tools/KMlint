@@ -123,6 +123,7 @@ func (p StyleSingleWhite) Run(ctx context.Context, KaraData *karadata.KaraData) 
 				continue
 			}
 			choir := strings.Contains(l_name, "choir") ||
+				(s.Italic == "-1" && (s.MarginV == "80") || s.MarginV == "70") || // try to detect choirs
 				strings.Contains(l_name, "spoken") ||
 				strings.Contains(l_name, "dialogue") ||
 				strings.Contains(l_name, "rubyscript") // when mixing rubscript lines with normal lines (2 template scripts)
