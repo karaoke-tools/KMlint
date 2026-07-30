@@ -4,7 +4,7 @@ go 1.25.5
 
 require (
 	github.com/adrg/xdg v0.5.3
-	github.com/gofrs/uuid/v5 v5.4.0
+	github.com/gofrs/uuid/v5 v5.5.0
 	github.com/moby/term v0.5.2
 	github.com/sirupsen/logrus v1.9.4
 	github.com/urfave/cli/v3 v3.9.0
