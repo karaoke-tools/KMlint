@@ -23,20 +23,20 @@ import (
 )
 
 type GitSetup struct {
-	*setup.Setup
+	setup.Setup
 	Repositories []app.Repository
 	BaseUri      string
 }
 
-func FromCommand(command *cli.Command) (*GitSetup, error) {
-	s := &GitSetup{
+func FromCommand(command *cli.Command) (GitSetup, error) {
+	s := GitSetup{
 		Setup:        setup.FromCommand(command),
 		Repositories: make([]app.Repository, 0),
 	}
 
 	kmConfig, err := app.LoadConf()
 	if err != nil {
-		return nil, err
+		return GitSetup{}, err
 	}
 	s.BaseUri = fmt.Sprintf("http://localhost:%d/system/karas/", kmConfig.System.FrontendPort)
 	for _, v := range kmConfig.System.Repositories {
@@ -88,7 +88,8 @@ func RunFromCommand(ctx context.Context, command *cli.Command) error {
 	}
 }
 
-func (s *GitSetup) Run(ctx context.Context) error {
+func (s GitSetup) Run(ctx context.Context) error {
+	s.Init()
 	var pr printer.Printer
 	if s.OutputJson {
 		pr = printer.NewJsonPrinter()

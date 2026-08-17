@@ -19,15 +19,15 @@ import (
 )
 
 type SongsSetup struct {
-	*setup.Setup
+	setup.Setup
 	Repositories []app.Repository
 	Uuids        []uuid.UUID
 	All          bool
 	BaseUri      string
 }
 
-func FromCommand(command *cli.Command) (*SongsSetup, error) {
-	s := &SongsSetup{
+func FromCommand(command *cli.Command) (SongsSetup, error) {
+	s := SongsSetup{
 		Setup:        setup.FromCommand(command),
 		Repositories: make([]app.Repository, 0),
 		Uuids:        make([]uuid.UUID, 0),
@@ -41,7 +41,7 @@ func FromCommand(command *cli.Command) (*SongsSetup, error) {
 			logrus.WithError(err).WithFields(logrus.Fields{
 				"uuid-argument": enabledUuid,
 			}).Error("Could not parse uuid")
-			return nil, err
+			return SongsSetup{}, err
 		} else {
 			s.Uuids = append(s.Uuids, u)
 		}
@@ -56,7 +56,7 @@ func FromCommand(command *cli.Command) (*SongsSetup, error) {
 
 	kmConfig, err := app.LoadConf()
 	if err != nil {
-		return nil, err
+		return SongsSetup{}, err
 	}
 	s.BaseUri = fmt.Sprintf("http://localhost:%d/system/karas/", kmConfig.System.FrontendPort)
 	for _, v := range kmConfig.System.Repositories {
@@ -108,7 +108,8 @@ func RunFromCommand(ctx context.Context, command *cli.Command) error {
 	}
 }
 
-func (s *SongsSetup) Run(ctx context.Context) error {
+func (s SongsSetup) Run(ctx context.Context) error {
+	s.Init()
 	if s.All {
 		return s.RunAll(ctx)
 	}

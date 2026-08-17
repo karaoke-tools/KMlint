@@ -20,11 +20,11 @@ import (
 )
 
 type ListLints struct {
-	*setup.Setup
+	setup.Setup
 }
 
-func FromCommand(command *cli.Command) *ListLints {
-	return &ListLints{Setup: setup.FromCommand(command)}
+func FromCommand(command *cli.Command) ListLints {
+	return ListLints{Setup: setup.FromCommand(command)}
 }
 
 type prb struct {
@@ -96,14 +96,15 @@ func (p prb) Println(namelen int, enabledlen int, b *strings.Builder, underline 
 	b.Reset()
 }
 
-func (l *ListLints) Run(ctx context.Context) error {
+func (l ListLints) Run(ctx context.Context) error {
+	l.Init()
 	if l.OutputJson {
 		return l.RunJson(ctx)
 	}
 	return l.RunTxt(ctx)
 }
 
-func (l *ListLints) RunTxt(ctx context.Context) error {
+func (l ListLints) RunTxt(ctx context.Context) error {
 	list := make([]prb, 0)
 	header := prb{Name: "Name", Desc: "Description", EnabledString: "Status"}
 	namelen, enabledlen := len(header.Name), len(header.EnabledString)
@@ -135,11 +136,13 @@ func (l *ListLints) RunTxt(ctx context.Context) error {
 	return nil
 }
 
-func (l *ListLints) RunJson(ctx context.Context) error {
+func (l ListLints) RunJson(ctx context.Context) error {
 	encoder := json.NewEncoder(os.Stdout)
 	encoder.SetIndent("", "  ")
 	for _, pf := range lints.Available() {
-		encoder.Encode(prb{Name: pf.Name(), Desc: pf.Description(), Enabled: pf.Enabled()})
+		if err := encoder.Encode(prb{Name: pf.Name(), Desc: pf.Description(), Enabled: pf.Enabled()}); err != nil {
+			return err
+		}
 	}
 	return nil
 }

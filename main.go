@@ -16,6 +16,7 @@ import (
 	"github.com/karaoke-tools/km-probe/internal/app/cliargs"
 	"github.com/karaoke-tools/km-probe/internal/app/git"
 	"github.com/karaoke-tools/km-probe/internal/app/info"
+	"github.com/karaoke-tools/km-probe/internal/app/setup"
 	"github.com/karaoke-tools/km-probe/internal/app/songs"
 	_ "github.com/karaoke-tools/km-probe/internal/repos"
 
@@ -30,6 +31,7 @@ func main() {
 	if info, ok := debug.ReadBuildInfo(); ok {
 		version = info.Main.Version
 	}
+	setup.SetLogrusFormatter(setup.StderrColorAuto())
 	app := &cli.Command{
 		Name:                  "km-probe",
 		Usage:                 "find common mistakes within your Karaoke Mugen repositories",

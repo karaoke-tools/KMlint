@@ -25,9 +25,10 @@ const MAX_WORKERS = 0xFF
 
 type Setup struct {
 	// settings
-	Hyperlink  bool
-	Color      bool
-	OutputJson bool
+	Hyperlink   bool
+	Color       bool
+	ColorStderr bool
+	OutputJson  bool
 
 	// workers
 	workers     chan struct{}
@@ -36,14 +37,14 @@ type Setup struct {
 
 // Use `StartWork` to wait for resources to become available before starting a goroutine.
 // Don't forget to use `StopWork` when the work is done.
-func (s *Setup) StartWork() {
+func (s Setup) StartWork() {
 	if s.withWorkers {
 		s.workers <- struct{}{}
 	}
 }
 
 // Use `StopWork` when a work is done. You must have called `StartWork` before.
-func (s *Setup) StopWork() {
+func (s Setup) StopWork() {
 	if s.withWorkers {
 		select {
 		case <-s.workers:
@@ -53,12 +54,11 @@ func (s *Setup) StopWork() {
 	}
 }
 
-func FromCommand(command *cli.Command) *Setup {
-	s := &Setup{
+func FromCommand(command *cli.Command) Setup {
+	s := Setup{
 		withWorkers: true,
 		workers:     make(chan struct{}, MAX_WORKERS), // maximum number of simultaneous workers
 	}
-	isTerminal := term.IsTerminal(os.Stdout.Fd())
 
 	// get value for json
 	switch command.String("output-format") {
@@ -67,22 +67,22 @@ func FromCommand(command *cli.Command) *Setup {
 	case "json":
 		s.OutputJson = true
 	default:
-		s.OutputJson = !isTerminal
+		s.OutputJson = !term.IsTerminal(os.Stdout.Fd())
 	}
 
 	// get value for color, this enables the use of ansi codes
 	switch command.String("color") {
 	case "never":
 		s.Color = false
+		s.ColorStderr = false
 	case "always":
 		s.Color = true
+		s.ColorStderr = true
 	default:
 		// by default, we display colors if this is a terminal
 		// note: colors are currently not supported with json output
-		s.Color = isTerminal
-		if os.Getenv("NO_COLOR") != "" || os.Getenv("TERM") == "dumb" {
-			s.Color = false
-		}
+		s.Color = StdoutColorAuto()
+		s.ColorStderr = StderrColorAuto()
 	}
 
 	// get value for hypelink
@@ -97,4 +97,8 @@ func FromCommand(command *cli.Command) *Setup {
 	}
 
 	return s
+}
+
+func (s Setup) Init() {
+	SetLogrusFormatter(s.ColorStderr)
 }

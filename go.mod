@@ -1,17 +1,17 @@
 module github.com/karaoke-tools/km-probe
 
-go 1.26.1
+go 1.26.6
 
 require (
 	github.com/adrg/xdg v0.5.3
-	github.com/gofrs/uuid/v5 v5.4.0
+	github.com/gofrs/uuid/v5 v5.5.1
 	github.com/moby/term v0.5.2
-	github.com/sirupsen/logrus v1.9.4
-	github.com/urfave/cli/v3 v3.9.0
+	github.com/sirupsen/logrus v1.10.0
+	github.com/urfave/cli/v3 v3.11.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 
 require (
 	github.com/Azure/go-ansiterm v0.0.0-20250102033503-faa5f7b0171c // indirect
-	golang.org/x/sys v0.41.0 // indirect
+	golang.org/x/sys v0.47.0 // indirect
 )
