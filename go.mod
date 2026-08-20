@@ -1,12 +1,12 @@
 module github.com/karaoke-tools/km-probe
 
-go 1.26.6
+go 1.27.0
 
 require (
 	github.com/adrg/xdg v0.5.3
 	github.com/gofrs/uuid/v5 v5.5.1
 	github.com/moby/term v0.5.2
-	github.com/sirupsen/logrus v1.10.0
+	github.com/sirupsen/logrus v1.10.1
 	github.com/urfave/cli/v3 v3.11.0
 	gopkg.in/yaml.v3 v3.0.1
 )

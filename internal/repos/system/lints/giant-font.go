@@ -50,8 +50,8 @@ func (p GiantFont) Run(ctx context.Context, KaraData *karadata.KaraData) (report
 		case <-ctx.Done():
 			return report.Abort(), ctx.Err()
 		default:
-			if strings.HasPrefix(line, "Style: ") {
-				s, err := style.Parse(strings.TrimPrefix(line, "Style: "))
+			if after, ok := strings.CutPrefix(line, "Style: "); ok {
+				s, err := style.Parse(after)
 				if err != nil {
 					return report.Abort(), err
 				}
