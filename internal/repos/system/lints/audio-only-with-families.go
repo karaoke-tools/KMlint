@@ -7,6 +7,7 @@ package lints
 
 import (
 	"context"
+	"uuid"
 
 	"github.com/karaoke-tools/km-probe/internal/karadata"
 	"github.com/karaoke-tools/km-probe/internal/karajson/tag"
@@ -16,8 +17,6 @@ import (
 	"github.com/karaoke-tools/km-probe/internal/lints/skip/cond"
 	"github.com/karaoke-tools/km-probe/internal/repos/system/lints/baselint"
 	"github.com/karaoke-tools/km-probe/internal/repos/system/tags/songtype"
-
-	"github.com/gofrs/uuid/v5"
 )
 
 type AudioOnlyWithFamilies struct {

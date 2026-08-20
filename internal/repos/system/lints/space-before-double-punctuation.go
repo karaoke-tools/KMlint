@@ -8,6 +8,7 @@ package lints
 import (
 	"context"
 	"strings"
+	"uuid"
 
 	"github.com/karaoke-tools/km-probe/internal/ass/lyrics"
 	"github.com/karaoke-tools/km-probe/internal/karadata"
@@ -18,8 +19,6 @@ import (
 	"github.com/karaoke-tools/km-probe/internal/lints/skip/cond"
 	"github.com/karaoke-tools/km-probe/internal/repos/system/lints/baselint"
 	"github.com/karaoke-tools/km-probe/internal/repos/system/tags/language"
-
-	"github.com/gofrs/uuid/v5"
 )
 
 type SpaceBeforeDoublePunctuation struct {

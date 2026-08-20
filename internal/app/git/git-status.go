@@ -15,8 +15,7 @@ import (
 	"path/filepath"
 	"slices"
 	"strings"
-
-	"github.com/gofrs/uuid/v5"
+	"uuid"
 )
 
 var (
@@ -145,7 +144,7 @@ func GitModifiedKaras(ctx context.Context, path string) ([]uuid.UUID, error) {
 				// not a karaoke, may be another file
 				continue
 			}
-			k, err := uuid.FromString(file)
+			k, err := uuid.Parse(file)
 			if err != nil {
 				// repo not using UUIDs ?
 				continue

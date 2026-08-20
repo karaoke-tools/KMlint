@@ -8,6 +8,7 @@ package lints
 import (
 	"context"
 	"slices"
+	"uuid"
 
 	"github.com/karaoke-tools/km-probe/internal/karadata"
 	"github.com/karaoke-tools/km-probe/internal/lints/lint"
@@ -17,8 +18,6 @@ import (
 	"github.com/karaoke-tools/km-probe/internal/repos/karamoe/lints/baselint"
 	"github.com/karaoke-tools/km-probe/internal/repos/karamoe/tags/collection"
 	"github.com/karaoke-tools/km-probe/internal/repos/karamoe/tags/misc"
-
-	"github.com/gofrs/uuid/v5"
 )
 
 type LiveDownload struct {

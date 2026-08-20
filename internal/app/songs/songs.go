@@ -9,11 +9,11 @@ import (
 	"context"
 	"fmt"
 	"slices"
+	"uuid"
 
 	"github.com/karaoke-tools/km-probe/internal/app"
 	"github.com/karaoke-tools/km-probe/internal/app/setup"
 
-	"github.com/gofrs/uuid/v5"
 	"github.com/sirupsen/logrus"
 	"github.com/urfave/cli/v3"
 )
@@ -37,7 +37,7 @@ func FromCommand(command *cli.Command) (SongsSetup, error) {
 	// parse uuid
 	enabledUuids := command.StringSlice("kid")
 	for _, enabledUuid := range enabledUuids {
-		if u, err := uuid.FromString(enabledUuid); err != nil {
+		if u, err := uuid.Parse(enabledUuid); err != nil {
 			logrus.WithError(err).WithFields(logrus.Fields{
 				"uuid-argument": enabledUuid,
 			}).Error("Could not parse uuid")

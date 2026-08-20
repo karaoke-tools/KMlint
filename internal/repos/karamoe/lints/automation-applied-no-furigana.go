@@ -7,6 +7,7 @@ package lints
 
 import (
 	"context"
+	"uuid"
 
 	"github.com/karaoke-tools/km-probe/internal/ass/lyrics"
 	"github.com/karaoke-tools/km-probe/internal/karadata"
@@ -18,8 +19,6 @@ import (
 	"github.com/karaoke-tools/km-probe/internal/repos/karamoe/lints/baselint"
 	"github.com/karaoke-tools/km-probe/internal/repos/karamoe/tags/collection"
 	"github.com/karaoke-tools/km-probe/internal/repos/system/tags/language"
-
-	"github.com/gofrs/uuid/v5"
 )
 
 type AutomationAppliedNoFurigana struct {

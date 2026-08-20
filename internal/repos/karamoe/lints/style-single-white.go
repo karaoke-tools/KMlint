@@ -9,6 +9,7 @@ import (
 	"context"
 	"slices"
 	"strings"
+	"uuid"
 
 	"github.com/karaoke-tools/km-probe/internal/ass/lyrics"
 	"github.com/karaoke-tools/km-probe/internal/ass/style"
@@ -23,8 +24,6 @@ import (
 	"github.com/karaoke-tools/km-probe/internal/repos/karamoe/tags/misc"
 	"github.com/karaoke-tools/km-probe/internal/repos/karamoe/tags/origin"
 	"github.com/karaoke-tools/km-probe/internal/repos/system/tags/language"
-
-	"github.com/gofrs/uuid/v5"
 )
 
 type StyleSingleWhite struct {

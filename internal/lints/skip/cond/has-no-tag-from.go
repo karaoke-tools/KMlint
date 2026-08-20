@@ -7,11 +7,10 @@ package cond
 
 import (
 	"context"
+	"uuid"
 
 	"github.com/karaoke-tools/km-probe/internal/karadata"
 	"github.com/karaoke-tools/km-probe/internal/karajson/tag"
-
-	"github.com/gofrs/uuid/v5"
 )
 
 type HasNoTagFrom struct {

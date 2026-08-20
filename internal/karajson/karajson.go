@@ -10,8 +10,7 @@ import (
 	"encoding/json"
 	"os"
 	"time"
-
-	"github.com/gofrs/uuid/v5"
+	"uuid"
 )
 
 func FromFile(ctx context.Context, path string) (*KaraJson, error) {

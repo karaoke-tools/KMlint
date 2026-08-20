@@ -9,6 +9,7 @@ import (
 	"context"
 	"encoding/json"
 	"time"
+	"uuid"
 
 	"github.com/karaoke-tools/km-probe/internal/karadata"
 	"github.com/karaoke-tools/km-probe/internal/karajson"
@@ -17,8 +18,6 @@ import (
 	"github.com/karaoke-tools/km-probe/internal/lints/report/result"
 	"github.com/karaoke-tools/km-probe/internal/lints/report/severity"
 	"github.com/karaoke-tools/km-probe/internal/lints/report/status"
-
-	"github.com/gofrs/uuid/v5"
 )
 
 type Aggregator struct {

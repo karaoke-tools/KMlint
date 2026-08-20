@@ -8,6 +8,7 @@ package lints
 import (
 	"context"
 	"slices"
+	"uuid"
 
 	"github.com/karaoke-tools/km-probe/internal/karadata"
 	"github.com/karaoke-tools/km-probe/internal/karajson/tag"
@@ -18,8 +19,6 @@ import (
 	"github.com/karaoke-tools/km-probe/internal/repos/system/lints/baselint"
 	"github.com/karaoke-tools/km-probe/internal/repos/system/tags/language"
 	"github.com/karaoke-tools/km-probe/internal/repos/system/tags/warning"
-
-	"github.com/gofrs/uuid/v5"
 )
 
 type LyricsWarningZXX struct {

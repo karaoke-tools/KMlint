@@ -7,6 +7,7 @@ package lints
 
 import (
 	"context"
+	"uuid"
 
 	"github.com/karaoke-tools/km-probe/internal/karadata"
 	"github.com/karaoke-tools/km-probe/internal/karajson/tag"
@@ -18,8 +19,6 @@ import (
 	"github.com/karaoke-tools/km-probe/internal/repos/karamoe/tags/origin"
 	"github.com/karaoke-tools/km-probe/internal/repos/karamoe/tags/songtype"
 	"github.com/karaoke-tools/km-probe/internal/repos/karamoe/tags/version"
-
-	"github.com/gofrs/uuid/v5"
 )
 
 type FullAudioOnlyOrigin struct {
