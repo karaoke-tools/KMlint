@@ -1,3 +1,4 @@
+---
 name: Release
 on:
   push:
@@ -22,12 +23,12 @@ jobs:
       CGO_ENABLED: "0"
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Get version number
         id: version
         run: echo "version=$(echo ${{ github.ref_name }} | cut -c2- -)" >> $GITHUB_OUTPUT
       - name: Setup Go
-        uses: actions/setup-go@v6
+        uses: actions/setup-go@v7
         with:
           go-version-file: go.mod # https://github.com/actions/setup-go/issues/523
       - name: Install depends
@@ -38,7 +39,7 @@ jobs:
         name: Add .exe extension
         run: mv km-probe-${{ steps.version.outputs.version }}-${{ matrix.os }}-${{ matrix.arch }}{,.exe}
       - name: Generate artifact attestation
-        uses: actions/attest@v4
+        uses: actions/attest@v4.2.2
         with:
           subject-path: km-probe*
       - name: Upload build artifact
@@ -54,7 +55,7 @@ jobs:
       contents: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Get version number
         id: version
         run: echo "version=$(echo ${{ github.ref_name }} | cut -c2- -)" >> $GITHUB_OUTPUT
