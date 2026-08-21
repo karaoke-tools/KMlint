@@ -7,7 +7,7 @@ require (
 	github.com/moby/term v0.5.2
 	github.com/sirupsen/logrus v1.10.1
 	github.com/urfave/cli/v3 v3.11.0
-	gopkg.in/yaml.v3 v3.0.1
+	go.yaml.in/yaml/v3 v3.0.5
 )
 
 require (
