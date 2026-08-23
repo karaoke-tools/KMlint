@@ -7,7 +7,8 @@ package printer
 
 import (
 	"context"
-	"encoding/json"
+	"encoding/json/jsontext"
+	"encoding/json/v2"
 	"os"
 
 	"github.com/karaoke-tools/km-probe/internal/lints"
@@ -15,26 +16,25 @@ import (
 
 type JsonPrinter struct {
 	*BasePrinter
-	e *json.Encoder
 }
 
 func NewJsonPrinter() Printer {
-	encoder := json.NewEncoder(os.Stdout)
-	encoder.SetIndent("", "  ")
-	return &JsonPrinter{
+	return JsonPrinter{
 		BasePrinter: NewBasePrinter(),
-		e:           encoder,
 	}
 }
 
-func (p *JsonPrinter) Encode(ctx context.Context, a *lints.Aggregator) error {
+func (p JsonPrinter) Encode(ctx context.Context, a *lints.Aggregator) error {
 	select {
 	case <-ctx.Done():
 		return ctx.Err()
 	case <-p.ready:
 		defer p.setReady()
 		defer p.aggregatorPool.Put(a)
-		if err := p.e.Encode(a); err != nil {
+		if err := json.MarshalWrite(os.Stdout, a, jsontext.WithIndent("  ")); err != nil {
+			return err
+		}
+		if _, err := os.Stdout.WriteString("\n"); err != nil {
 			return err
 		}
 	}

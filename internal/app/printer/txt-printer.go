@@ -37,7 +37,7 @@ func NewTxtPrinter(hyperlink bool, color bool, baseUri string) Printer {
 	}
 }
 
-func (p *TxtPrinter) Encode(ctx context.Context, a *lints.Aggregator) error {
+func (p TxtPrinter) Encode(ctx context.Context, a *lints.Aggregator) error {
 	builder := &strings.Builder{}
 	select {
 	case <-ctx.Done():
@@ -54,7 +54,7 @@ func (p *TxtPrinter) Encode(ctx context.Context, a *lints.Aggregator) error {
 
 }
 
-func (p *TxtPrinter) encodeAggregator(ctx context.Context, a *lints.Aggregator, builder *strings.Builder) error {
+func (p TxtPrinter) encodeAggregator(ctx context.Context, a *lints.Aggregator, builder *strings.Builder) error {
 	width := uint16(200)
 	if size, err := term.GetWinsize(os.Stdout.Fd()); err == nil {
 		width = size.Width

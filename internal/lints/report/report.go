@@ -6,7 +6,10 @@
 package report
 
 import (
-	"encoding/json"
+	"encoding/json/jsontext"
+	"encoding/json/v2"
+	"maps"
+	"slices"
 	"sync"
 
 	"github.com/karaoke-tools/km-probe/internal/lints/report/result"
@@ -15,7 +18,7 @@ import (
 )
 
 type Report interface {
-	json.Marshaler
+	json.MarshalerTo
 
 	Result() result.Result // true: passed, false: failed
 	Status() status.Status // completed, aborted, skipped, etc.
@@ -27,18 +30,38 @@ type Report interface {
 	Delete()
 }
 
-func (r *report) MarshalJSON() ([]byte, error) {
-	return json.Marshal(struct {
-		Status   string `json:"status"`
-		Result   string `json:"result"`
-		Message  string `json:"message,omitempty"`
-		Severity string `json:"severity"`
-	}{
-		Status:   r.status.String(),
-		Result:   r.result.String(),
-		Message:  r.message,
-		Severity: r.severity.String(),
-	})
+func (r *report) MarshalJSONTo(enc *jsontext.Encoder) error {
+	m := map[string]string{
+		"result":   r.result.String(),
+		"severity": r.severity.String(),
+		"status":   r.status.String(),
+	}
+	if r.message != "" {
+		m["message"] = r.message
+	}
+
+	if err := enc.WriteToken(jsontext.BeginObject); err != nil {
+		return err
+	}
+	keys := maps.Keys(m)
+	deterministic, _ := json.GetOption(enc.Options(), json.Deterministic)
+	if deterministic {
+		keys = slices.Values(slices.Sorted(keys))
+	}
+
+	for k := range keys {
+		if err := json.MarshalEncode(enc, k); err != nil {
+			return err
+		}
+		if err := json.MarshalEncode(enc, m[k]); err != nil {
+			return err
+		}
+	}
+
+	if err := enc.WriteToken(jsontext.EndObject); err != nil {
+		return err
+	}
+	return nil
 }
 
 type report struct {

@@ -7,7 +7,7 @@ package karajson
 
 import (
 	"context"
-	"encoding/json"
+	"encoding/json/v2"
 	"os"
 	"time"
 )
@@ -36,13 +36,13 @@ type KaraJson struct {
 }
 
 type Header struct {
-	Version     uint32 `json:"version"`
+	Version     int    `json:"version"`
 	Description string `json:"description"`
 }
 
 type Media struct {
 	Default  bool    `json:"default"`
-	Duration uint32  `json:"duration"`
+	Duration int16   `json:"duration"`
 	Filename string  `json:"filename"`
 	Filesize uint64  `json:"filesize"`
 	Loudnorm string  `json:"loudnorm"`
@@ -65,12 +65,12 @@ type Data struct {
 	Parents               []Kid             `json:"parents"`
 	Repository            string            `json:"repository"`
 	Songname              string            `json:"songname"`
-	Songorder             *json.Number      `json:"songorder,omitempty"`
+	Songorder             *int              `json:"songorder,omitempty"`
 	Tags                  Tags              `json:"tags"`
 	Titles                map[string]string `json:"titles"`
 	TitlesAliases         []string          `json:"titles_aliases"`
 	TitlesDefaultLanguage string            `json:"titles_default_language"`
-	Year                  json.Number       `json:"year"`
+	Year                  int               `json:"year"`
 }
 
 type Tags struct {

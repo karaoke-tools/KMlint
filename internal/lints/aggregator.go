@@ -7,7 +7,6 @@ package lints
 
 import (
 	"context"
-	"encoding/json"
 	"time"
 
 	"github.com/karaoke-tools/km-probe/internal/karadata"
@@ -26,7 +25,7 @@ type Aggregator struct {
 	Kid        karajson.Kid `json:"kid"`
 	CreatedAt  time.Time    `json:"created-at"`
 	ModifiedAt time.Time    `json:"modified-at"`
-	Year       json.Number  `json:"year"`
+	Year       int          `json:"year"`
 	// [Lints] report direct features of the song based on metadata, lyrics, etc.
 	// They can be used to detect common mistakes.
 	Lints   []lint.Lint              `json:"-"`

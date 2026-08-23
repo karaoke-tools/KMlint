@@ -7,8 +7,9 @@ package info
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
+	"encoding/json/jsontext"
+	"encoding/json/v2"
+	"io"
 	"os"
 	"strings"
 
@@ -49,7 +50,8 @@ const (
 	noColor
 )
 
-func (p prb) Println(namelen int, enabledlen int, b *strings.Builder, underline bool, color color) {
+func (p prb) Write(out io.Writer, namelen int, enabledlen int, b *strings.Builder, underline bool, color color) error {
+	defer b.Reset()
 	switch color {
 	case green:
 		b.WriteString(ansi.Green)
@@ -92,8 +94,10 @@ func (p prb) Println(namelen int, enabledlen int, b *strings.Builder, underline 
 	if underline || color != noColor {
 		b.WriteString(ansi.Reset)
 	}
-	fmt.Println(b.String())
-	b.Reset()
+	if _, err := out.Write([]byte(b.String())); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (l ListLints) Run(ctx context.Context) error {
@@ -119,7 +123,9 @@ func (l ListLints) RunTxt(ctx context.Context) error {
 		}
 	}
 	b := strings.Builder{}
-	header.Println(namelen, enabledlen, &b, l.Color, noColor)
+	if err := header.Write(os.Stdout, namelen, enabledlen, &b, l.Color, noColor); err != nil {
+		return err
+	}
 
 	for _, item := range list {
 		c := noColor
@@ -130,19 +136,25 @@ func (l ListLints) RunTxt(ctx context.Context) error {
 				c = red
 			}
 		}
-		item.Println(namelen, enabledlen, &b, false, c)
+		if err := item.Write(os.Stdout, namelen, enabledlen, &b, false, c); err != nil {
+			return err
+		}
 
 	}
 	return nil
 }
 
 func (l ListLints) RunJson(ctx context.Context) error {
-	encoder := json.NewEncoder(os.Stdout)
-	encoder.SetIndent("", "  ")
 	for _, pf := range lints.Available() {
-		if err := encoder.Encode(prb{Name: pf.Name(), Desc: pf.Description(), Enabled: pf.Enabled()}); err != nil {
+		if err := json.MarshalWrite(os.Stdout,
+			prb{Name: pf.Name(), Desc: pf.Description(), Enabled: pf.Enabled()},
+			jsontext.WithIndent("  ")); err != nil {
 			return err
 		}
+		if _, err := os.Stdout.WriteString("\n"); err != nil {
+			return err
+		}
+
 	}
 	return nil
 }
