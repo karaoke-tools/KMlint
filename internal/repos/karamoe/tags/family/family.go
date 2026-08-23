@@ -5,11 +5,9 @@
 
 package family
 
-import (
-	"uuid"
-)
+import "github.com/karaoke-tools/km-probe/internal/karajson"
 
 var (
-	Animation = uuid.MustParse("0377db02-3af6-43b8-9b08-c759df3d25c3")
-	Real      = uuid.MustParse("5391f9fe-638c-415f-8dc9-958e3a2c5787")
+	Animation = karajson.MustParseTid("0377db02-3af6-43b8-9b08-c759df3d25c3")
+	Real      = karajson.MustParseTid("5391f9fe-638c-415f-8dc9-958e3a2c5787")
 )

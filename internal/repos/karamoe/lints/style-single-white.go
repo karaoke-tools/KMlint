@@ -9,12 +9,12 @@ import (
 	"context"
 	"slices"
 	"strings"
-	"uuid"
 
 	"github.com/karaoke-tools/km-probe/internal/ass/lyrics"
 	"github.com/karaoke-tools/km-probe/internal/ass/style"
 	"github.com/karaoke-tools/km-probe/internal/ass/style/colour"
 	"github.com/karaoke-tools/km-probe/internal/karadata"
+	"github.com/karaoke-tools/km-probe/internal/karajson"
 	"github.com/karaoke-tools/km-probe/internal/karajson/tag"
 	"github.com/karaoke-tools/km-probe/internal/lints/lint"
 	"github.com/karaoke-tools/km-probe/internal/lints/report"
@@ -39,7 +39,7 @@ func NewStyleSingleWhite() lint.Lint {
 				cond.NoLyrics{},
 				cond.HasAnyTagFrom{
 					TagType: tag.Misc,
-					Tags:    []uuid.UUID{misc.GroupSinging},
+					Tags:    []karajson.Tid{misc.GroupSinging},
 					Msg:     "group singing song", // we can use one color by voice
 				},
 				cond.HasMoreTagsThan{
@@ -49,12 +49,12 @@ func NewStyleSingleWhite() lint.Lint {
 				},
 				cond.HasAnyTagFrom{
 					TagType: tag.Langs,
-					Tags:    []uuid.UUID{language.MUL},
+					Tags:    []karajson.Tid{language.MUL},
 					Msg:     "is multilingual song", // we can use one color by language
 				},
 				cond.HasAnyTagFrom{
 					TagType: tag.Origins,
-					Tags:    []uuid.UUID{origin.Musical},
+					Tags:    []karajson.Tid{origin.Musical},
 					// musicals often have dialogues,
 					// and it's okay to have multiple colors even if this is not a group singing song
 					Msg: "is from a musical",

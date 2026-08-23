@@ -7,9 +7,9 @@ package lints
 
 import (
 	"context"
-	"uuid"
 
 	"github.com/karaoke-tools/km-probe/internal/karadata"
+	"github.com/karaoke-tools/km-probe/internal/karajson"
 	"github.com/karaoke-tools/km-probe/internal/karajson/tag"
 	"github.com/karaoke-tools/km-probe/internal/lints/lint"
 	"github.com/karaoke-tools/km-probe/internal/lints/report"
@@ -35,7 +35,7 @@ func NewNoLyrics() lint.Lint {
 }
 
 func (p NoLyrics) Run(ctx context.Context, KaraData *karadata.KaraData) (report.Report, error) {
-	if res := KaraData.KaraJson.HasAnyTagFrom(tag.Langs, []uuid.UUID{language.ZXX}); !res {
+	if res := KaraData.KaraJson.HasAnyTagFrom(tag.Langs, []karajson.Tid{language.ZXX}); !res {
 		return report.Fail(severity.Critical, "no lyrics file, but the media is supposed to have has linguistic content"), nil
 	}
 	return report.Pass(), nil // no linguistical content

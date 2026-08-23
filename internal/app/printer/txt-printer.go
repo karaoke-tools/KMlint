@@ -60,7 +60,7 @@ func (p *TxtPrinter) encodeAggregator(ctx context.Context, a *lints.Aggregator, 
 		width = size.Width
 	}
 
-	msg := fmt.Sprintf("%s [%s] (%s)", a.Songname, a.Kid.String(), a.Repository)
+	msg := fmt.Sprintf("%s [%s] (%s)", a.Songname, a.Kid, a.Repository)
 	cursor := 0
 	wrap := int(max(1, width))
 	for next := min(wrap, len(msg)); cursor < len(msg); next = min(next+wrap, len(msg)) {

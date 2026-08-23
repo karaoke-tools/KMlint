@@ -7,10 +7,10 @@ package lints
 
 import (
 	"context"
-	"uuid"
 
 	"github.com/karaoke-tools/km-probe/internal/ass/lyrics"
 	"github.com/karaoke-tools/km-probe/internal/karadata"
+	"github.com/karaoke-tools/km-probe/internal/karajson"
 	"github.com/karaoke-tools/km-probe/internal/karajson/tag"
 	"github.com/karaoke-tools/km-probe/internal/lints/lint"
 	"github.com/karaoke-tools/km-probe/internal/lints/report"
@@ -36,12 +36,12 @@ func NewAutomationAppliedNoFurigana() lint.Lint {
 					// we skip this lint when song is in furigana (non-latin with japanese)
 					cond.HasAnyTagFrom{
 						TagType: tag.Collections,
-						Tags:    []uuid.UUID{collection.NonLatin},
+						Tags:    []karajson.Tid{collection.NonLatin},
 						Msg:     "song with latin script",
 					},
 					cond.HasAnyTagFrom{
 						TagType: tag.Langs,
-						Tags:    []uuid.UUID{language.JPN},
+						Tags:    []karajson.Tid{language.JPN},
 						Msg:     "japanese song",
 					},
 				},

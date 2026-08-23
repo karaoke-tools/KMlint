@@ -7,9 +7,9 @@ package lints
 
 import (
 	"context"
-	"uuid"
 
 	"github.com/karaoke-tools/km-probe/internal/karadata"
+	"github.com/karaoke-tools/km-probe/internal/karajson"
 	"github.com/karaoke-tools/km-probe/internal/karajson/tag"
 	"github.com/karaoke-tools/km-probe/internal/lints/lint"
 	"github.com/karaoke-tools/km-probe/internal/lints/report"
@@ -44,18 +44,18 @@ func NewFullAudioOnlyOrigin() lint.Lint {
 					},
 					cond.HasAnyTagFrom{
 						TagType: tag.Origins,
-						Tags:    []uuid.UUID{origin.Vtuber},
+						Tags:    []karajson.Tid{origin.Vtuber},
 						Msg:     "vtuber tag",
 					},
 				},
 				cond.HasNoTagFrom{
 					TagType: tag.Versions,
-					Tags:    []uuid.UUID{version.Full},
+					Tags:    []karajson.Tid{version.Full},
 					Msg:     "is not a full version",
 				},
 				cond.HasNoTagFrom{
 					TagType: tag.Songtypes,
-					Tags:    []uuid.UUID{songtype.AUDIO},
+					Tags:    []karajson.Tid{songtype.AUDIO},
 					Msg:     "is not an audio only",
 				},
 			},

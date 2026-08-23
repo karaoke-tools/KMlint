@@ -7,9 +7,9 @@ package lints
 
 import (
 	"context"
-	"uuid"
 
 	"github.com/karaoke-tools/km-probe/internal/karadata"
+	"github.com/karaoke-tools/km-probe/internal/karajson"
 	"github.com/karaoke-tools/km-probe/internal/karajson/tag"
 	"github.com/karaoke-tools/km-probe/internal/lints/lint"
 	"github.com/karaoke-tools/km-probe/internal/lints/report"
@@ -33,17 +33,17 @@ func NewFullAudioOnlySongtype() lint.Lint {
 			cond.Any{
 				cond.HasNoTagFrom{
 					TagType: tag.Versions,
-					Tags:    []uuid.UUID{version.Full},
+					Tags:    []karajson.Tid{version.Full},
 					Msg:     "is not a full version",
 				},
 				cond.HasNoTagFrom{
 					TagType: tag.Songtypes,
-					Tags:    []uuid.UUID{songtype.AUDIO},
+					Tags:    []karajson.Tid{songtype.AUDIO},
 					Msg:     "is not an audio only",
 				},
 				cond.HasNoTagFrom{
 					TagType: tag.Songtypes,
-					Tags:    []uuid.UUID{songtype.OP, songtype.ED, songtype.IN},
+					Tags:    []karajson.Tid{songtype.OP, songtype.ED, songtype.IN},
 					Msg:     "is not an OP/ED/IN",
 				},
 			},

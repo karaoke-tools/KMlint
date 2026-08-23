@@ -8,9 +8,9 @@ package lints
 import (
 	"context"
 	"slices"
-	"uuid"
 
 	"github.com/karaoke-tools/km-probe/internal/karadata"
+	"github.com/karaoke-tools/km-probe/internal/karajson"
 	"github.com/karaoke-tools/km-probe/internal/lints/lint"
 	"github.com/karaoke-tools/km-probe/internal/lints/report"
 	"github.com/karaoke-tools/km-probe/internal/lints/report/severity"
@@ -36,7 +36,7 @@ func NewDoubleYearGroup() lint.Lint {
 
 // we cannot just checking the len of the group field,
 // because on some repositories it is used for more than only years
-var yearsGroup []uuid.UUID = []uuid.UUID{
+var yearsGroup []karajson.Tid = []karajson.Tid{
 	year.Y1950,
 	year.Y1960,
 	year.Y1970,

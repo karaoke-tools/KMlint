@@ -10,7 +10,6 @@ import (
 	"encoding/json"
 	"os"
 	"time"
-	"uuid"
 )
 
 func FromFile(ctx context.Context, path string) (*KaraJson, error) {
@@ -61,9 +60,9 @@ type Data struct {
 	CreatedAt             time.Time         `json:"created_at"`
 	FromDisplayType       string            `json:"from_display_type"`
 	IgnoreHooks           bool              `json:"ignore-hooks"`
-	Kid                   uuid.UUID         `json:"kid"`
+	Kid                   Kid               `json:"kid"`
 	ModifiedAt            time.Time         `json:"modified_at"`
-	Parents               []uuid.UUID       `json:"parents"`
+	Parents               []Kid             `json:"parents"`
 	Repository            string            `json:"repository"`
 	Songname              string            `json:"songname"`
 	Songorder             *json.Number      `json:"songorder,omitempty"`
@@ -75,20 +74,20 @@ type Data struct {
 }
 
 type Tags struct {
-	Authors      []uuid.UUID `json:"authors"`
-	Collections  []uuid.UUID `json:"collections"`
-	Creators     []uuid.UUID `json:"creators"`
-	Families     []uuid.UUID `json:"families"`
-	Groups       []uuid.UUID `json:"groups"`
-	Langs        []uuid.UUID `json:"langs"`
-	Misc         []uuid.UUID `json:"misc"`
-	Origins      []uuid.UUID `json:"origins"`
-	Platforms    []uuid.UUID `json:"platforms"`
-	Series       []uuid.UUID `json:"series"`
-	Singers      []uuid.UUID `json:"singers"`
-	Singergroups []uuid.UUID `json:"singergroups"`
-	Songtypes    []uuid.UUID `json:"songtypes"`
-	Songwriters  []uuid.UUID `json:"songwriters"`
-	Versions     []uuid.UUID `json:"versions"`
-	Warnings     []uuid.UUID `json:"warnings"`
+	Authors      []Tid `json:"authors"`
+	Collections  []Tid `json:"collections"`
+	Creators     []Tid `json:"creators"`
+	Families     []Tid `json:"families"`
+	Groups       []Tid `json:"groups"`
+	Langs        []Tid `json:"langs"`
+	Misc         []Tid `json:"misc"`
+	Origins      []Tid `json:"origins"`
+	Platforms    []Tid `json:"platforms"`
+	Series       []Tid `json:"series"`
+	Singers      []Tid `json:"singers"`
+	Singergroups []Tid `json:"singergroups"`
+	Songtypes    []Tid `json:"songtypes"`
+	Songwriters  []Tid `json:"songwriters"`
+	Versions     []Tid `json:"versions"`
+	Warnings     []Tid `json:"warnings"`
 }

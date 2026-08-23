@@ -5,15 +5,13 @@
 
 package version
 
-import (
-	"uuid"
-)
+import "github.com/karaoke-tools/km-probe/internal/karajson"
 
 var (
 	// versions
-	Cover    = uuid.MustParse("03e1e1d2-8641-47b7-bbcb-39a3df9ff21c")
-	Full     = uuid.MustParse("c2143a7f-6970-450e-8a79-0302db9220a9")
-	OffVocal = uuid.MustParse("c0cc87b9-55b9-40f0-878a-fbb9e34c151e")
+	Cover    = karajson.MustParseTid("03e1e1d2-8641-47b7-bbcb-39a3df9ff21c")
+	Full     = karajson.MustParseTid("c2143a7f-6970-450e-8a79-0302db9220a9")
+	OffVocal = karajson.MustParseTid("c0cc87b9-55b9-40f0-878a-fbb9e34c151e")
 
 	// versions alias
 	Instrumental = OffVocal

@@ -8,9 +8,9 @@ package lints
 import (
 	"context"
 	"slices"
-	"uuid"
 
 	"github.com/karaoke-tools/km-probe/internal/karadata"
+	"github.com/karaoke-tools/km-probe/internal/karajson"
 	"github.com/karaoke-tools/km-probe/internal/karajson/tag"
 	"github.com/karaoke-tools/km-probe/internal/lints/lint"
 	"github.com/karaoke-tools/km-probe/internal/lints/report"
@@ -41,10 +41,10 @@ func NewSongtypeConflict() lint.Lint {
 }
 
 func (p SongtypeConflict) Run(ctx context.Context, KaraData *karadata.KaraData) (report.Report, error) {
-	if KaraData.KaraJson.HasAnyTagFrom(tag.Songtypes, []uuid.UUID{songtype.OT}) {
+	if KaraData.KaraJson.HasAnyTagFrom(tag.Songtypes, []karajson.Tid{songtype.OT}) {
 		return report.Fail(severity.Critical, "songtype \"OT\" is forbidden"), nil
 	}
-	if KaraData.KaraJson.HasAnyTagFrom(tag.Songtypes, []uuid.UUID{songtype.AUDIO}) && KaraData.KaraJson.HasAnyTagFrom(tag.Songtypes, []uuid.UUID{songtype.MV, songtype.AMV}) {
+	if KaraData.KaraJson.HasAnyTagFrom(tag.Songtypes, []karajson.Tid{songtype.AUDIO}) && KaraData.KaraJson.HasAnyTagFrom(tag.Songtypes, []karajson.Tid{songtype.MV, songtype.AMV}) {
 		return report.Fail(severity.Critical, "MV/AMV cannot be audio only"), nil
 	}
 
@@ -58,7 +58,7 @@ func (p SongtypeConflict) Run(ctx context.Context, KaraData *karadata.KaraData) 
 
 		// maybe in the future we will move AUDIO into "families", and forbid songs to be both a CS and something else (only allow audio only songs to be CS because"we are not an encyclopedia")
 		// then we may simply force this field length to be equal to 1 (maybe directly in KM, by a rule in repo's manifest)
-		if !slices.Contains([]uuid.UUID{songtype.AUDIO, songtype.CS}, tag) {
+		if !slices.Contains([]karajson.Tid{songtype.AUDIO, songtype.CS}, tag) {
 			counter++
 			if counter > 1 {
 				return report.Fail(severity.Critical, "incompatible songtypes"), nil

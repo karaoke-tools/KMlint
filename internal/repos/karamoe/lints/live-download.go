@@ -8,9 +8,9 @@ package lints
 import (
 	"context"
 	"slices"
-	"uuid"
 
 	"github.com/karaoke-tools/km-probe/internal/karadata"
+	"github.com/karaoke-tools/km-probe/internal/karajson"
 	"github.com/karaoke-tools/km-probe/internal/lints/lint"
 	"github.com/karaoke-tools/km-probe/internal/lints/report"
 	"github.com/karaoke-tools/km-probe/internal/lints/report/severity"
@@ -37,13 +37,13 @@ func NewLiveDownload() lint.Lint {
 }
 
 // State of "no live download" collections as of 2025-01-06
-var collectionsNoLiveDownload = []uuid.UUID{
+var collectionsNoLiveDownload = []karajson.Tid{
 	collection.Asia,
 	collection.NonLatin,
 	collection.West,
 }
 
-func isNoLiveDownloadCollection(collection uuid.UUID) bool {
+func isNoLiveDownloadCollection(collection karajson.Tid) bool {
 	return slices.Contains(collectionsNoLiveDownload, collection)
 }
 

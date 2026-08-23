@@ -7,15 +7,15 @@ package cond
 
 import (
 	"context"
-	"uuid"
 
 	"github.com/karaoke-tools/km-probe/internal/karadata"
+	"github.com/karaoke-tools/km-probe/internal/karajson"
 	"github.com/karaoke-tools/km-probe/internal/karajson/tag"
 )
 
 type HasNoTagFrom struct {
 	TagType tag.Tag
-	Tags    []uuid.UUID
+	Tags    []karajson.Tid
 	Msg     string
 }
 

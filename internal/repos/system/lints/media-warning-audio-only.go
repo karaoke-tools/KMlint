@@ -8,9 +8,9 @@ package lints
 import (
 	"context"
 	"slices"
-	"uuid"
 
 	"github.com/karaoke-tools/km-probe/internal/karadata"
+	"github.com/karaoke-tools/km-probe/internal/karajson"
 	"github.com/karaoke-tools/km-probe/internal/karajson/tag"
 	"github.com/karaoke-tools/km-probe/internal/lints/lint"
 	"github.com/karaoke-tools/km-probe/internal/lints/report"
@@ -32,7 +32,7 @@ func NewMediaWarningAudioOnly() lint.Lint {
 			"media warning but this is an audio only kara",
 			cond.HasNoTagFrom{
 				TagType: tag.Songtypes,
-				Tags:    []uuid.UUID{songtype.AudioOnly},
+				Tags:    []karajson.Tid{songtype.AudioOnly},
 				Msg:     "not an audio only",
 			},
 		),
@@ -41,7 +41,7 @@ func NewMediaWarningAudioOnly() lint.Lint {
 }
 
 // warnings that are related to the media
-var mediaWarnings []uuid.UUID = []uuid.UUID{
+var mediaWarnings []karajson.Tid = []karajson.Tid{
 	warning.R18Media,
 	warning.Spoiler,
 	warning.Epilepsy,

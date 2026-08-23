@@ -7,9 +7,9 @@ package lints
 
 import (
 	"context"
-	"uuid"
 
 	"github.com/karaoke-tools/km-probe/internal/karadata"
+	"github.com/karaoke-tools/km-probe/internal/karajson"
 	"github.com/karaoke-tools/km-probe/internal/karajson/tag"
 	"github.com/karaoke-tools/km-probe/internal/lints/lint"
 	"github.com/karaoke-tools/km-probe/internal/lints/report"
@@ -30,7 +30,7 @@ func NewOffVocalWithoutParent() lint.Lint {
 			"off vocal but no parent",
 			cond.HasNoTagFrom{
 				TagType: tag.Versions,
-				Tags:    []uuid.UUID{version.OffVocal},
+				Tags:    []karajson.Tid{version.OffVocal},
 				Msg:     "not an off vocal",
 			},
 		),

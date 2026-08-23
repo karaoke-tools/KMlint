@@ -9,7 +9,6 @@ import (
 	"context"
 	"encoding/json"
 	"time"
-	"uuid"
 
 	"github.com/karaoke-tools/km-probe/internal/karadata"
 	"github.com/karaoke-tools/km-probe/internal/karajson"
@@ -22,12 +21,12 @@ import (
 
 type Aggregator struct {
 	// Identification of the song
-	Repository string      `json:"repository"`
-	Songname   string      `json:"songname"`
-	Kid        uuid.UUID   `json:"kid"`
-	CreatedAt  time.Time   `json:"created-at"`
-	ModifiedAt time.Time   `json:"modified-at"`
-	Year       json.Number `json:"year"`
+	Repository string       `json:"repository"`
+	Songname   string       `json:"songname"`
+	Kid        karajson.Kid `json:"kid"`
+	CreatedAt  time.Time    `json:"created-at"`
+	ModifiedAt time.Time    `json:"modified-at"`
+	Year       json.Number  `json:"year"`
 	// [Lints] report direct features of the song based on metadata, lyrics, etc.
 	// They can be used to detect common mistakes.
 	Lints   []lint.Lint              `json:"-"`

@@ -8,9 +8,9 @@ package lints
 import (
 	"context"
 	"slices"
-	"uuid"
 
 	"github.com/karaoke-tools/km-probe/internal/karadata"
+	"github.com/karaoke-tools/km-probe/internal/karajson"
 	"github.com/karaoke-tools/km-probe/internal/karajson/tag"
 	"github.com/karaoke-tools/km-probe/internal/lints/lint"
 	"github.com/karaoke-tools/km-probe/internal/lints/report"
@@ -25,13 +25,13 @@ type AltVersionWithoutParent struct {
 	lint.WithDefault
 }
 
-var versionsWithoutParentInfo = []uuid.UUID{
+var versionsWithoutParentInfo = []karajson.Tid{
 	version.Cover,
 	version.OffVocal,
 	version.NonLatin,
 }
 
-var versionsWithoutParentCritical = []uuid.UUID{
+var versionsWithoutParentCritical = []karajson.Tid{
 	version.Acoustic,
 	version.Alternative,
 	version.Full,
@@ -39,11 +39,11 @@ var versionsWithoutParentCritical = []uuid.UUID{
 	version.Short,
 }
 
-func isVersionWithoutParentCritical(versionType uuid.UUID) bool {
+func isVersionWithoutParentCritical(versionType karajson.Tid) bool {
 	return slices.Contains(versionsWithoutParentCritical, versionType)
 }
 
-func isVersionWithoutParentInfo(versionType uuid.UUID) bool {
+func isVersionWithoutParentInfo(versionType karajson.Tid) bool {
 	return slices.Contains(versionsWithoutParentInfo, versionType)
 }
 

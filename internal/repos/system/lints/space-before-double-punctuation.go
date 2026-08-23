@@ -8,10 +8,10 @@ package lints
 import (
 	"context"
 	"strings"
-	"uuid"
 
 	"github.com/karaoke-tools/km-probe/internal/ass/lyrics"
 	"github.com/karaoke-tools/km-probe/internal/karadata"
+	"github.com/karaoke-tools/km-probe/internal/karajson"
 	"github.com/karaoke-tools/km-probe/internal/karajson/tag"
 	"github.com/karaoke-tools/km-probe/internal/lints/lint"
 	"github.com/karaoke-tools/km-probe/internal/lints/report"
@@ -34,7 +34,7 @@ func NewSpaceBeforeDoublePunctuation() lint.Lint {
 				cond.NoLyrics{},
 				cond.HasTagsNotFrom{
 					TagType: tag.Langs,
-					Tags:    []uuid.UUID{language.JPN, language.ENG},
+					Tags:    []karajson.Tid{language.JPN, language.ENG},
 					Msg:     "non english/japanese language",
 				},
 			},

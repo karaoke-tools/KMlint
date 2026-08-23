@@ -8,9 +8,9 @@ package lints
 import (
 	"context"
 	"slices"
-	"uuid"
 
 	"github.com/karaoke-tools/km-probe/internal/karadata"
+	"github.com/karaoke-tools/km-probe/internal/karajson"
 	"github.com/karaoke-tools/km-probe/internal/karajson/tag"
 	"github.com/karaoke-tools/km-probe/internal/lints/lint"
 	"github.com/karaoke-tools/km-probe/internal/lints/report"
@@ -35,7 +35,7 @@ func NewMusicVideoCreditless() lint.Lint {
 				cond.NoLyrics{},
 				cond.HasNoTagFrom{
 					TagType: tag.Songtypes,
-					Tags:    []uuid.UUID{songtype.MusicVideo},
+					Tags:    []karajson.Tid{songtype.MusicVideo},
 					Msg:     "not a music video",
 				},
 			},

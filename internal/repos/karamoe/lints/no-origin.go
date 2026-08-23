@@ -7,9 +7,9 @@ package lints
 
 import (
 	"context"
-	"uuid"
 
 	"github.com/karaoke-tools/km-probe/internal/karadata"
+	"github.com/karaoke-tools/km-probe/internal/karajson"
 	"github.com/karaoke-tools/km-probe/internal/karajson/tag"
 	"github.com/karaoke-tools/km-probe/internal/lints/lint"
 	"github.com/karaoke-tools/km-probe/internal/lints/report"
@@ -37,7 +37,7 @@ func NewNoOrigin() lint.Lint {
 				},
 				cond.HasNoTagFrom{
 					TagType: tag.Songtypes,
-					Tags:    []uuid.UUID{songtype.OP, songtype.ED, songtype.IN},
+					Tags:    []karajson.Tid{songtype.OP, songtype.ED, songtype.IN},
 					Msg:     "songtype is not OP/ED/IN",
 				},
 			},

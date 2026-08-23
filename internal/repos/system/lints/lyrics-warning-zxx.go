@@ -8,9 +8,9 @@ package lints
 import (
 	"context"
 	"slices"
-	"uuid"
 
 	"github.com/karaoke-tools/km-probe/internal/karadata"
+	"github.com/karaoke-tools/km-probe/internal/karajson"
 	"github.com/karaoke-tools/km-probe/internal/karajson/tag"
 	"github.com/karaoke-tools/km-probe/internal/lints/lint"
 	"github.com/karaoke-tools/km-probe/internal/lints/report"
@@ -32,7 +32,7 @@ func NewLyricsWarningZXX() lint.Lint {
 			"lyrics warning, but there is no linguistical content",
 			cond.HasNoTagFrom{
 				TagType: tag.Warnings,
-				Tags:    []uuid.UUID{warning.R18Lyrics},
+				Tags:    []karajson.Tid{warning.R18Lyrics},
 				Msg:     "no lyrics-warning tag",
 			},
 		),

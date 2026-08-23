@@ -7,9 +7,9 @@ package lints
 
 import (
 	"context"
-	"uuid"
 
 	"github.com/karaoke-tools/km-probe/internal/karadata"
+	"github.com/karaoke-tools/km-probe/internal/karajson"
 	"github.com/karaoke-tools/km-probe/internal/karajson/tag"
 	"github.com/karaoke-tools/km-probe/internal/lints/lint"
 	"github.com/karaoke-tools/km-probe/internal/lints/report"
@@ -34,7 +34,7 @@ func NewSongorderNoOpEd() lint.Lint {
 				cond.HasNoSongorder{},
 				cond.HasAnyTagFrom{
 					TagType: tag.Songtypes,
-					Tags:    []uuid.UUID{songtype.OP, songtype.ED},
+					Tags:    []karajson.Tid{songtype.OP, songtype.ED},
 					Msg:     "songtype is an OP or ED",
 				},
 			},
@@ -44,17 +44,17 @@ func NewSongorderNoOpEd() lint.Lint {
 }
 
 func (p SongorderNoOpEd) Run(ctx context.Context, KaraData *karadata.KaraData) (report.Report, error) {
-	if b := KaraData.KaraJson.HasAnyTagFrom(tag.Songtypes, []uuid.UUID{songtype.IN, songtype.PV}); b {
+	if b := KaraData.KaraJson.HasAnyTagFrom(tag.Songtypes, []karajson.Tid{songtype.IN, songtype.PV}); b {
 		return report.Fail(severity.Warning, "songorder in IS/PV may be justified, but is rare"), nil
 	}
 	// fanwork + MV/OT: yes this is a strange tag mix, but at least the "songorder" is probably a deliberate choice…
 	// playlists might be better for that, but this is probably valid
-	if b := KaraData.KaraJson.HasAnyTagFrom(tag.Origins, []uuid.UUID{origin.Fanworks}) && KaraData.KaraJson.HasAnyTagFrom(tag.Songtypes, []uuid.UUID{songtype.MV, songtype.OT}); b {
+	if b := KaraData.KaraJson.HasAnyTagFrom(tag.Origins, []karajson.Tid{origin.Fanworks}) && KaraData.KaraJson.HasAnyTagFrom(tag.Songtypes, []karajson.Tid{songtype.MV, songtype.OT}); b {
 		return report.Pass(), nil
 	}
 	// MV + OVA: probably a serie of music videos
 	// playlists might be better for that, but this is probably valid
-	if b := KaraData.KaraJson.HasAnyTagFrom(tag.Origins, []uuid.UUID{origin.OVA}) && KaraData.KaraJson.HasAnyTagFrom(tag.Songtypes, []uuid.UUID{songtype.MV}); b {
+	if b := KaraData.KaraJson.HasAnyTagFrom(tag.Origins, []karajson.Tid{origin.OVA}) && KaraData.KaraJson.HasAnyTagFrom(tag.Songtypes, []karajson.Tid{songtype.MV}); b {
 		return report.Pass(), nil
 	}
 	return report.Fail(severity.Critical, "remove songorder, or add missing songtype"), nil

@@ -7,9 +7,9 @@ package lints
 
 import (
 	"context"
-	"uuid"
 
 	"github.com/karaoke-tools/km-probe/internal/karadata"
+	"github.com/karaoke-tools/km-probe/internal/karajson"
 	"github.com/karaoke-tools/km-probe/internal/karajson/tag"
 	"github.com/karaoke-tools/km-probe/internal/lints/lint"
 	"github.com/karaoke-tools/km-probe/internal/lints/report"
@@ -26,7 +26,7 @@ type Creditless struct {
 	lint.WithDefault
 }
 
-var possibleCreditlessOrigin = []uuid.UUID{
+var possibleCreditlessOrigin = []karajson.Tid{
 	origin.Movie,
 	origin.OriginalNetworkAnimation,
 	origin.OriginalVideoAnimation,
@@ -42,17 +42,17 @@ func NewCreditless() lint.Lint {
 			cond.Any{
 				cond.HasAnyTagFrom{
 					TagType: tag.Misc,
-					Tags:    []uuid.UUID{misc.Creditless},
+					Tags:    []karajson.Tid{misc.Creditless},
 					Msg:     "is a creditless version",
 				},
 				cond.HasAnyTagFrom{
 					TagType: tag.Songtypes,
-					Tags:    []uuid.UUID{songtype.AUDIO},
+					Tags:    []karajson.Tid{songtype.AUDIO},
 					Msg:     "has audio only tag",
 				},
 				cond.HasNoTagFrom{
 					TagType: tag.Songtypes,
-					Tags:    []uuid.UUID{songtype.OP, songtype.ED},
+					Tags:    []karajson.Tid{songtype.OP, songtype.ED},
 					Msg:     "songtype is not OP/ED",
 				},
 				cond.HasNoTagFrom{

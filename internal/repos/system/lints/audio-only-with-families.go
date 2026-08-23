@@ -7,9 +7,9 @@ package lints
 
 import (
 	"context"
-	"uuid"
 
 	"github.com/karaoke-tools/km-probe/internal/karadata"
+	"github.com/karaoke-tools/km-probe/internal/karajson"
 	"github.com/karaoke-tools/km-probe/internal/karajson/tag"
 	"github.com/karaoke-tools/km-probe/internal/lints/lint"
 	"github.com/karaoke-tools/km-probe/internal/lints/report"
@@ -30,7 +30,7 @@ func NewAudioOnlyWithFamilies() lint.Lint {
 			"media content tag including both audio only tag and other tags at the same time",
 			cond.HasNoTagFrom{
 				TagType: tag.Songtypes,
-				Tags:    []uuid.UUID{songtype.AudioOnly},
+				Tags:    []karajson.Tid{songtype.AudioOnly},
 				Msg:     "not an audio only",
 			},
 		),

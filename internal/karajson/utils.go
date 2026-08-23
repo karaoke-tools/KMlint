@@ -8,12 +8,11 @@ package karajson
 import (
 	"context"
 	"slices"
-	"uuid"
 
 	"github.com/karaoke-tools/km-probe/internal/karajson/tag"
 )
 
-func (k KaraJson) Tag(t tag.Tag) []uuid.UUID {
+func (k KaraJson) Tag(t tag.Tag) []Tid {
 	switch t {
 	case tag.Authors:
 		return k.Data.Tags.Authors
@@ -48,10 +47,10 @@ func (k KaraJson) Tag(t tag.Tag) []uuid.UUID {
 	case tag.Warnings:
 		return k.Data.Tags.Warnings
 	}
-	return []uuid.UUID{}
+	return []Tid{}
 }
 
-func (k *KaraJson) HasOnlyTagsFrom(ctx context.Context, t tag.Tag, ids []uuid.UUID) (bool, error) {
+func (k *KaraJson) HasOnlyTagsFrom(ctx context.Context, t tag.Tag, ids []Tid) (bool, error) {
 	field := k.Tag(t)
 	if len(field) > len(ids) {
 		return false, nil
@@ -69,9 +68,9 @@ func (k *KaraJson) HasOnlyTagsFrom(ctx context.Context, t tag.Tag, ids []uuid.UU
 	return true, nil
 }
 
-func (k *KaraJson) HasAnyTagFrom(t tag.Tag, ids []uuid.UUID) bool {
+func (k *KaraJson) HasAnyTagFrom(t tag.Tag, ids []Tid) bool {
 	field := k.Tag(t)
-	return slices.ContainsFunc(field, func(u uuid.UUID) bool { return slices.Contains(ids, u) })
+	return slices.ContainsFunc(field, func(t Tid) bool { return slices.Contains(ids, t) })
 }
 
 func (k *KaraJson) HasEmptyTagtype(t tag.Tag) bool {
