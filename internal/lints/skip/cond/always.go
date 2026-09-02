@@ -8,7 +8,7 @@ package cond
 import (
 	"context"
 
-	"github.com/karaoke-tools/km-probe/internal/karadata"
+	"github.com/karaoke-tools/kmlint/internal/karadata"
 )
 
 type Always struct{}

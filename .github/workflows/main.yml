@@ -1,33 +1,29 @@
 ---
-name: CI 
+name: CI
 
-# Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the "master" branch
   push:
     branches: [master]
   pull_request:
     branches: [master]
-
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 jobs:
-    go_build:
-      runs-on: ubuntu-latest
-      env:
-        CGO_ENABLED: "0"
-      steps:
-        - name: Checkout
-          uses: actions/checkout@v7
-        - name: Setup Go
-          uses: actions/setup-go@v7
-          with:
-            go-version-file: go.mod # https://github.com/actions/setup-go/issues/523
-        - name: Install depends
-          run: go get .
-        - name: Build
-          run: go build -v ./...
-        - name: Vet
-          run: go vet ./...
-        - name: Test
-          run: go test ./...
+  go_build:
+    runs-on: ubuntu-latest
+    env:
+      CGO_ENABLED: "0"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: Setup Go
+        uses: actions/setup-go@v7
+        with:
+          go-version-file: go.mod
+      - name: Install depends
+        run: go get .
+      - name: Build
+        run: go build -v ./...
+      - name: Vet
+        run: go vet ./...
+      - name: Test
+        run: go test ./...

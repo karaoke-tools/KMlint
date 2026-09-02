@@ -1,13 +1,13 @@
 ---
-name: Request a new probe
-about: Suggest an probe
+name: Request a new lint
+about: Suggest an lint
 title: ''
-labels: new-probe
+labels: new-lint
 assignees: ''
 
 ---
 
-**Name of the probe**:
+**Name of the lint**:
 
 **Description**:
 - What should be detected:

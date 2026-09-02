@@ -13,12 +13,12 @@ import (
 	"strings"
 	"syscall"
 
-	"github.com/karaoke-tools/km-probe/internal/app/cliargs"
-	"github.com/karaoke-tools/km-probe/internal/app/git"
-	"github.com/karaoke-tools/km-probe/internal/app/info"
-	"github.com/karaoke-tools/km-probe/internal/app/setup"
-	"github.com/karaoke-tools/km-probe/internal/app/songs"
-	_ "github.com/karaoke-tools/km-probe/internal/repos"
+	"github.com/karaoke-tools/kmlint/internal/app/cliargs"
+	"github.com/karaoke-tools/kmlint/internal/app/git"
+	"github.com/karaoke-tools/kmlint/internal/app/info"
+	"github.com/karaoke-tools/kmlint/internal/app/setup"
+	"github.com/karaoke-tools/kmlint/internal/app/songs"
+	_ "github.com/karaoke-tools/kmlint/internal/repos"
 
 	"github.com/sirupsen/logrus"
 	"github.com/urfave/cli/v3"
@@ -33,7 +33,7 @@ func main() {
 	}
 	setup.SetLogrusFormatter(setup.StderrColorAuto())
 	app := &cli.Command{
-		Name:                  "km-probe",
+		Name:                  "kmlint",
 		Usage:                 "find common mistakes within your Karaoke Mugen repositories",
 		EnableShellCompletion: true,
 		Authors: []any{

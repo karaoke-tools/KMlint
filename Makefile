@@ -16,13 +16,13 @@ clean:
 	go clean
 reinstall: uninstall install
 install:
-	$(INSTALL) km-probe $(DESTDIR)$(bindir)/km-probe
+	$(INSTALL) kmlint $(DESTDIR)$(bindir)/kmlint
 	$(MKDIRP) $(DESTDIR)$(BASHCOMPLETIONSDIR)
-	$(DESTDIR)$(bindir)/km-probe completion bash > $(DESTDIR)$(BASHCOMPLETIONSDIR)/km-probe
+	$(DESTDIR)$(bindir)/kmlint completion bash > $(DESTDIR)$(BASHCOMPLETIONSDIR)/kmlint
 	@echo "================================="
 	@echo ">> Now run the following command:"
-	@echo "\tsource $(DESTDIR)$(BASHCOMPLETIONSDIR)/km-probe"
+	@echo "\tsource $(DESTDIR)$(BASHCOMPLETIONSDIR)/kmlint"
 	@echo "================================="
 uninstall:
-	$(RM) $(DESTDIR)$(bindir)/km-probe
-	$(RM) $(DESTDIR)$(BASHCOMPLETIONSDIR)/km-probe
+	$(RM) $(DESTDIR)$(bindir)/kmlint
+	$(RM) $(DESTDIR)$(BASHCOMPLETIONSDIR)/kmlint

@@ -11,7 +11,7 @@ import (
 	"encoding/json/v2"
 	"os"
 
-	"github.com/karaoke-tools/km-probe/internal/lints"
+	"github.com/karaoke-tools/kmlint/internal/lints"
 )
 
 type JsonPrinter struct {

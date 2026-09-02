@@ -6,8 +6,8 @@
 package report
 
 import (
-	"github.com/karaoke-tools/km-probe/internal/lints/report/severity"
-	"github.com/karaoke-tools/km-probe/internal/lints/report/status"
+	"github.com/karaoke-tools/kmlint/internal/lints/report/severity"
+	"github.com/karaoke-tools/kmlint/internal/lints/report/status"
 )
 
 // When the test is not relevant

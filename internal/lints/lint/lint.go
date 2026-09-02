@@ -8,8 +8,8 @@ package lint
 import (
 	"context"
 
-	"github.com/karaoke-tools/km-probe/internal/karadata"
-	"github.com/karaoke-tools/km-probe/internal/lints/report"
+	"github.com/karaoke-tools/kmlint/internal/karadata"
+	"github.com/karaoke-tools/kmlint/internal/lints/report"
 )
 
 type Lint interface {

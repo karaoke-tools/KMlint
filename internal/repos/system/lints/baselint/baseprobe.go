@@ -6,8 +6,8 @@
 package baselint
 
 import (
-	"github.com/karaoke-tools/km-probe/internal/lints/lint/baselint"
-	"github.com/karaoke-tools/km-probe/internal/lints/skip"
+	"github.com/karaoke-tools/kmlint/internal/lints/lint/baselint"
+	"github.com/karaoke-tools/kmlint/internal/lints/skip"
 )
 
 type BaseLint struct {

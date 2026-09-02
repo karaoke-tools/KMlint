@@ -8,8 +8,8 @@ package cond
 import (
 	"context"
 
-	"github.com/karaoke-tools/km-probe/internal/karadata"
-	"github.com/karaoke-tools/km-probe/internal/karajson/tag"
+	"github.com/karaoke-tools/kmlint/internal/karadata"
+	"github.com/karaoke-tools/kmlint/internal/karajson/tag"
 )
 
 type HasEmptyTagtype struct {

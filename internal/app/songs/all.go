@@ -9,8 +9,8 @@ import (
 	"context"
 	"sync"
 
-	"github.com/karaoke-tools/km-probe/internal/app"
-	"github.com/karaoke-tools/km-probe/internal/app/printer"
+	"github.com/karaoke-tools/kmlint/internal/app"
+	"github.com/karaoke-tools/kmlint/internal/app/printer"
 )
 
 // Run on all songs of all repositories

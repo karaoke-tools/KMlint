@@ -5,7 +5,7 @@
 
 package misc
 
-import "github.com/karaoke-tools/km-probe/internal/karajson"
+import "github.com/karaoke-tools/kmlint/internal/karajson"
 
 var (
 	Creditless      = karajson.MustParseTid("fe819ff1-9db8-4a0f-85dc-0e322c9126c4")

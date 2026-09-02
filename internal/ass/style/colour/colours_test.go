@@ -8,7 +8,7 @@ package colour_test
 import (
 	"testing"
 
-	"github.com/karaoke-tools/km-probe/internal/ass/style/colour"
+	"github.com/karaoke-tools/kmlint/internal/ass/style/colour"
 )
 
 func TestColourString(t *testing.T) {

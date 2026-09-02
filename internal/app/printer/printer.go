@@ -9,7 +9,7 @@ import (
 	"context"
 	"sync"
 
-	"github.com/karaoke-tools/km-probe/internal/lints"
+	"github.com/karaoke-tools/kmlint/internal/lints"
 )
 
 // Printer outputs aggretator reports to stdout

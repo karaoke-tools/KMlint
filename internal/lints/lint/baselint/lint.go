@@ -9,8 +9,8 @@ import (
 	"context"
 	"strings"
 
-	"github.com/karaoke-tools/km-probe/internal/karadata"
-	"github.com/karaoke-tools/km-probe/internal/lints/skip"
+	"github.com/karaoke-tools/kmlint/internal/karadata"
+	"github.com/karaoke-tools/kmlint/internal/lints/skip"
 )
 
 type BaseLint struct {

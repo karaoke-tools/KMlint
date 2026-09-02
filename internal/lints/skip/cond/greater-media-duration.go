@@ -9,7 +9,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/karaoke-tools/km-probe/internal/karadata"
+	"github.com/karaoke-tools/kmlint/internal/karadata"
 )
 
 type GreaterMediaDuration struct {

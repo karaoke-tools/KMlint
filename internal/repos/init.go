@@ -6,6 +6,6 @@
 package repos
 
 import (
-	_ "github.com/karaoke-tools/km-probe/internal/repos/karamoe/lints"
-	_ "github.com/karaoke-tools/km-probe/internal/repos/system/lints"
+	_ "github.com/karaoke-tools/kmlint/internal/repos/karamoe/lints"
+	_ "github.com/karaoke-tools/kmlint/internal/repos/system/lints"
 )

@@ -6,7 +6,7 @@
 package lints
 
 import (
-	"github.com/karaoke-tools/km-probe/internal/lints/lint"
+	"github.com/karaoke-tools/kmlint/internal/lints/lint"
 )
 
 var availableLints = make([]lint.Lint, 0)

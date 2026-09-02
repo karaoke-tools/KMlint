@@ -6,7 +6,7 @@
 package report
 
 import (
-	"github.com/karaoke-tools/km-probe/internal/lints/report/status"
+	"github.com/karaoke-tools/kmlint/internal/lints/report/status"
 )
 
 // `abort` has no custom information, and can be reused

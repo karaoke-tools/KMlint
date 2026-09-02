@@ -1,32 +1,32 @@
-# km-probe
-`km-probe` is an utility to help you find common mistakes within your Karaoke Mugen repositories.
+# KMlint
+**KMlint** is an utility to help you find common mistakes within your Karaoke Mugen repositories.
 
-## When km-probe could be useful
-- As a repository maintainer, you can run `km-probe` find potential mistakes in all non-commited new songs and songs modifications (for example, lyrics files with resolution not set to 0×0).
-- You can run `km-probe` on all songs of a repository to find some songs having a specific mistake that you want to work on (for example lyrics files without automation script).
+## When KMlint could be useful
+- As a repository maintainer, you can run KMlint find potential mistakes in all non-commited new songs and songs modifications (for example, lyrics files with resolution not set to 0×0).
+- You can run KMlint on all songs of a repository to find some songs having a specific mistake that you want to work on (for example lyrics files without automation script).
 
 Not yet implemented, but could be done eventually:
 - Goal for v1.0.0: Integration directly into Karaoke Mugen application as an optional plugin.
 - Goal for v2.0.0: As a contributor, you could get an early feedback on songs you sent to inbox before a maintainer get the time to look at it (and you may want to update your inbox because you find a mistake).
 
-## What km-probe is not
-- `km-probe` is not a replacement for maintainers. Some checks can only be manual and will never be automated.
-- `km-probe` is not intended to force contributors or maintainers to create karaoke according to "the only correct way to do karaokes".
+## What KMlint is not
+- KMlint is not a replacement for maintainers. Some checks can only be manual and will never be automated.
+- KMlint is not intended to force contributors or maintainers to create karaoke according to "the only correct way to do karaokes".
 It is only a tool, and it can be wrong. Maintainers still have final word on what is or is not integrated into their songs repository,
 and should rely on their own judgment to do this.
-- `km-probe` is not bug-free. If you find a bug, please [report it](https://github.com/karaoke-tools/km-probe/issues) if it is not already.
-- `km-probe` is not mandatory. You can run Karaoke Mugen application without `km-probe`.
+- KMlint is not bug-free. If you find a bug, please [report it](https://github.com/karaoke-tools/kmlint/issues) if it is not already.
+- KMlint is not mandatory. You can run Karaoke Mugen application without KMlint.
 However, I hope it will help you making better karaokes and following your repository rules.
 
 ## Supported platforms
 I intend to support the same set of platform Karaoke Mugen does by the release of v1.0.0.
 Currently, has only be tested on Debian 12, not extensively.
 
-If you have issues running it on your platform, please [report it](https://github.com/karaoke-tools/km-probe/issues).
+If you have issues running it on your platform, please [report it](https://github.com/karaoke-tools/kmlint/issues).
 Please note that I don't have any MacOS or Windows license, so I cannot test on those platforms myself,
 but I will treat your platform specific issues with all the required care.
 
-If you tested successfuly on a different platform, it would be helping to inform me (via the [Github discussions feature](https://github.com/karaoke-tools/km-probe/discussions) for example).
+If you tested successfuly on a different platform, it would be helping to inform me (via the [Github discussions feature](https://github.com/karaoke-tools/kmlint/discussions) for example).
 
 ## Semantic Versioning
 This software is using [Semantic Versioning](https://semver.org/). The public API will be fully defined by the release of v1.0.0.
@@ -34,13 +34,13 @@ This software is using [Semantic Versioning](https://semver.org/). The public AP
 Until v1.0.0, we are still in the initial development phase, so backward compatibility is not yet ensured.
 
 ## How to use
-To get a list of available commands and options, run `km-probe help`.
+To get a list of available commands and options, run `kmlint help`.
 
 ### List available lints
-To list available lints, run `km-probe info`.
+To list available lints, run `kmlint info`.
 
 ### Run on all songs
-If you want to run lints on all songs, you can use the command `km-probe songs --all`
+If you want to run lints on all songs, you can use the command `kmlint songs --all`
 
 ### Run only on a subset of songs
 You can select precisely which songs to analyse by providing a KID (Karaoke UUID) with the `--kid` flag.
@@ -48,14 +48,14 @@ You can select precisely which songs to analyse by providing a KID (Karaoke UUID
 For example:
 
 ```bash
-$ km-probe songs --kid=c8e61289-31fd-430a-8a56-f0ed95f84d50
+$ kmlint songs --kid=c8e61289-31fd-430a-8a56-f0ed95f84d50
 ```
 
 This flag can be provided multiple times to analyse several songs.
 
 
 ### Run only on new/modified songs
-If you want to run only on new/modified song (in comparison to the last local commit on the repository), you can run the command `km-probe git`.
+If you want to run only on new/modified song (in comparison to the last local commit on the repository), you can run the command `kmlint git`.
 
 ### Global options
 #### Repositories
@@ -65,7 +65,7 @@ When this flag is used with a repository name, all other repositories will be co
 For example:
 
 ```bash
-$ km-probe --repo=mugen.re songs --all
+$ kmlint --repo=mugen.re songs --all
 ```
 
 This flag can be provided multiple times to enable several repositories.
@@ -95,10 +95,10 @@ If hyperlinks annoy you, they can be disabled using the `--hyperlink=never` opti
 ## How to install
 ### From release artifacts
 1. Download the binary that matches your system for the latest release.
-2. In all this documentation we will assume you have renamed it to `km-probe`
-3. Make it executable (on Linux `chmod +x km-probe`)
+2. In all this documentation we will assume you have renamed it to `kmlint`
+3. Make it executable (on Linux `chmod +x kmlint`)
 4. Move it to a directory present in your `PATH` environment variable (so you can use the software without indicating the full path).
-For example, on Linux `mkdir -p ~/bin && mv km-probe ~/bin` should work on most distributions.
+For example, on Linux `mkdir -p ~/bin && mv kmlint ~/bin` should work on most distributions.
 
 ### Other methods
 For all the methods below, you must have Go toolchain installed on your computer.
@@ -109,22 +109,22 @@ You must use a version of Go above 1.21
 #### Install using golang builtin package manager
 Install the latest version:
 ```bash
-$ go install github.com/karaoke-tools/km-probe@latest
+$ go install github.com/karaoke-tools/kmlint@latest
 ```
 
 or install a specific version (replace `vX.Y.Z` by the version number):
 
 ```bash
-$ go install github.com/karaoke-tools/km-probe@vX.Y.Z
+$ go install github.com/karaoke-tools/kmlint@vX.Y.Z
 ```
 
 
 #### From source
 ##### Build
 0. Dependencies: `git`, `make` (they are most likely already installed on your system)
-1. Clone the repository (`git clone https://github.com/karaoke-tools/km-probe`)
-2. Change directory to go inside the cloned repository (`cd km-probe`)
-2. Run: `make`, this creates the binary as `km-probe`
+1. Clone the repository (`git clone https://github.com/karaoke-tools/kmlint`)
+2. Change directory to go inside the cloned repository (`cd kmlint`)
+2. Run: `make`, this creates the binary as `kmlint`
 
 ##### Install
 Run: `sudo make install`
@@ -138,5 +138,5 @@ Run: `sudo make uninstall`
 To update the software, run `git pull`, and do the Build and the Install steps again.
 
 ## License
-`km-probe` is a free and open source software.
-See the [`LICENSE`](https://github.com/karaoke-tools/km-probe/blob/master/LICENSE) file for more information.
+KMlint is a free and open source software.
+See the [`LICENSE`](https://github.com/karaoke-tools/kmlint/blob/master/LICENSE) file for more information.

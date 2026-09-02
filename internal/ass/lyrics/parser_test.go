@@ -9,7 +9,7 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/karaoke-tools/km-probe/internal/ass/lyrics"
+	"github.com/karaoke-tools/kmlint/internal/ass/lyrics"
 )
 
 // TestKfLen tests `Line.KfLen`

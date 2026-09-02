@@ -12,11 +12,11 @@ import (
 	"os"
 	"strings"
 
-	"github.com/karaoke-tools/km-probe/internal/app/ansi"
-	"github.com/karaoke-tools/km-probe/internal/lints"
-	"github.com/karaoke-tools/km-probe/internal/lints/report/result"
-	"github.com/karaoke-tools/km-probe/internal/lints/report/severity"
-	"github.com/karaoke-tools/km-probe/internal/lints/report/status"
+	"github.com/karaoke-tools/kmlint/internal/app/ansi"
+	"github.com/karaoke-tools/kmlint/internal/lints"
+	"github.com/karaoke-tools/kmlint/internal/lints/report/result"
+	"github.com/karaoke-tools/kmlint/internal/lints/report/severity"
+	"github.com/karaoke-tools/kmlint/internal/lints/report/status"
 
 	"github.com/moby/term"
 )

@@ -9,7 +9,7 @@ import (
 	"context"
 	"slices"
 
-	"github.com/karaoke-tools/km-probe/internal/karajson/tag"
+	"github.com/karaoke-tools/kmlint/internal/karajson/tag"
 )
 
 func (k KaraJson) Tag(t tag.Tag) []Tid {

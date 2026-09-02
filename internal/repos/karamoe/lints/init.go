@@ -6,8 +6,8 @@
 package lints
 
 import (
-	"github.com/karaoke-tools/km-probe/internal/lints"
-	"github.com/karaoke-tools/km-probe/internal/lints/lint"
+	"github.com/karaoke-tools/kmlint/internal/lints"
+	"github.com/karaoke-tools/kmlint/internal/lints/lint"
 )
 
 func init() {

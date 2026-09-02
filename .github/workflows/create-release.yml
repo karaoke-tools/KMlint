@@ -30,23 +30,23 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v7
         with:
-          go-version-file: go.mod # https://github.com/actions/setup-go/issues/523
+          go-version-file: go.mod
       - name: Install depends
         run: go get .
       - name: Build
-        run: go build -v -trimpath -o km-probe-${{ steps.version.outputs.version }}-${{ matrix.os }}-${{ matrix.arch }}
+        run: go build -v -trimpath -o kmlint-${{ steps.version.outputs.version }}-${{ matrix.os }}-${{ matrix.arch }}
       - if: matrix.os == 'windows'
         name: Add .exe extension
-        run: mv km-probe-${{ steps.version.outputs.version }}-${{ matrix.os }}-${{ matrix.arch }}{,.exe}
+        run: mv kmlint-${{ steps.version.outputs.version }}-${{ matrix.os }}-${{ matrix.arch }}{,.exe}
       - name: Generate artifact attestation
         uses: actions/attest@v4.2.2
         with:
-          subject-path: km-probe*
+          subject-path: kmlint*
       - name: Upload build artifact
         uses: actions/upload-artifact@v7
         with:
-          name: km-probe-${{ steps.version.outputs.version }}-${{ matrix.os }}-${{ matrix.arch }}
-          path: km-probe*
+          name: kmlint-${{ steps.version.outputs.version }}-${{ matrix.os }}-${{ matrix.arch }}
+          path: kmlint*
   release:
     name: Release
     needs: [build-release]
@@ -62,7 +62,7 @@ jobs:
       - name: Download artifacts
         uses: actions/download-artifact@v8
         with:
-          pattern: km-probe-${{ steps.version.outputs.version }}*
+          pattern: kmlint-${{ steps.version.outputs.version }}*
           merge-multiple: true
       - name: Release
         uses: ncipollo/release-action@v1
@@ -70,5 +70,5 @@ jobs:
           generateReleaseNotes: true
           makeLatest: "legacy"
           name: "Version ${{ steps.version.outputs.version }}"
-          artifacts: "km-probe-${{ steps.version.outputs.version }}*"
+          artifacts: "kmlint-${{ steps.version.outputs.version }}*"
           immutableCreate: true

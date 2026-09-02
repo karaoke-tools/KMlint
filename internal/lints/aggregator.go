@@ -9,13 +9,13 @@ import (
 	"context"
 	"time"
 
-	"github.com/karaoke-tools/km-probe/internal/karadata"
-	"github.com/karaoke-tools/km-probe/internal/karajson"
-	"github.com/karaoke-tools/km-probe/internal/lints/lint"
-	"github.com/karaoke-tools/km-probe/internal/lints/report"
-	"github.com/karaoke-tools/km-probe/internal/lints/report/result"
-	"github.com/karaoke-tools/km-probe/internal/lints/report/severity"
-	"github.com/karaoke-tools/km-probe/internal/lints/report/status"
+	"github.com/karaoke-tools/kmlint/internal/karadata"
+	"github.com/karaoke-tools/kmlint/internal/karajson"
+	"github.com/karaoke-tools/kmlint/internal/lints/lint"
+	"github.com/karaoke-tools/kmlint/internal/lints/report"
+	"github.com/karaoke-tools/kmlint/internal/lints/report/result"
+	"github.com/karaoke-tools/kmlint/internal/lints/report/severity"
+	"github.com/karaoke-tools/kmlint/internal/lints/report/status"
 )
 
 type Aggregator struct {

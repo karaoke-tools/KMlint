@@ -8,8 +8,8 @@ package cond
 import (
 	"context"
 
-	"github.com/karaoke-tools/km-probe/internal/karadata"
-	"github.com/karaoke-tools/km-probe/internal/lints/skip"
+	"github.com/karaoke-tools/kmlint/internal/karadata"
+	"github.com/karaoke-tools/kmlint/internal/lints/skip"
 )
 
 type Any []skip.Condition

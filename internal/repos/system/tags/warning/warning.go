@@ -5,7 +5,7 @@
 
 package warning
 
-import "github.com/karaoke-tools/km-probe/internal/karajson"
+import "github.com/karaoke-tools/kmlint/internal/karajson"
 
 var (
 	// warnings

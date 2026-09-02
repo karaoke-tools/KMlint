@@ -9,13 +9,13 @@ import (
 	"context"
 	"slices"
 
-	"github.com/karaoke-tools/km-probe/internal/karadata"
-	"github.com/karaoke-tools/km-probe/internal/lints/lint"
-	"github.com/karaoke-tools/km-probe/internal/lints/report"
-	"github.com/karaoke-tools/km-probe/internal/lints/report/severity"
-	"github.com/karaoke-tools/km-probe/internal/lints/skip/cond"
-	"github.com/karaoke-tools/km-probe/internal/repos/karamoe/lints/baselint"
-	"github.com/karaoke-tools/km-probe/internal/repos/karamoe/tags/misc"
+	"github.com/karaoke-tools/kmlint/internal/karadata"
+	"github.com/karaoke-tools/kmlint/internal/lints/lint"
+	"github.com/karaoke-tools/kmlint/internal/lints/report"
+	"github.com/karaoke-tools/kmlint/internal/lints/report/severity"
+	"github.com/karaoke-tools/kmlint/internal/lints/skip/cond"
+	"github.com/karaoke-tools/kmlint/internal/repos/karamoe/lints/baselint"
+	"github.com/karaoke-tools/kmlint/internal/repos/karamoe/tags/misc"
 )
 
 type LongTagOnShortMedia struct {

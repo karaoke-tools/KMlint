@@ -13,9 +13,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/karaoke-tools/km-probe/internal/app/ansi"
-	"github.com/karaoke-tools/km-probe/internal/app/setup"
-	"github.com/karaoke-tools/km-probe/internal/lints"
+	"github.com/karaoke-tools/kmlint/internal/app/ansi"
+	"github.com/karaoke-tools/kmlint/internal/app/setup"
+	"github.com/karaoke-tools/kmlint/internal/lints"
 
 	"github.com/urfave/cli/v3"
 )

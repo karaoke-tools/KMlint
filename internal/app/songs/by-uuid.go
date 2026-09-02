@@ -13,8 +13,8 @@ import (
 	"sync"
 	"sync/atomic"
 
-	"github.com/karaoke-tools/km-probe/internal/app"
-	"github.com/karaoke-tools/km-probe/internal/app/printer"
+	"github.com/karaoke-tools/kmlint/internal/app"
+	"github.com/karaoke-tools/kmlint/internal/app/printer"
 
 	"github.com/sirupsen/logrus"
 )

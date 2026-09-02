@@ -22,7 +22,7 @@ A clear and concise description of what you expected to happen.
 If applicable, add screenshots to help explain your problem.
 
 **Version:**
-Please paste the result of the command `km-probe --version`:
+Please paste the result of the command `kmlint --version`:
 
 **OS**
 What operating system are you using:

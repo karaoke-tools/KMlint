@@ -11,8 +11,8 @@ import (
 	"slices"
 	"uuid"
 
-	"github.com/karaoke-tools/km-probe/internal/app"
-	"github.com/karaoke-tools/km-probe/internal/app/setup"
+	"github.com/karaoke-tools/kmlint/internal/app"
+	"github.com/karaoke-tools/kmlint/internal/app/setup"
 
 	"github.com/sirupsen/logrus"
 	"github.com/urfave/cli/v3"

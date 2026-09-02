@@ -10,8 +10,8 @@ import (
 	"os"
 	"path"
 
-	"github.com/karaoke-tools/km-probe/internal/ass"
-	"github.com/karaoke-tools/km-probe/internal/karajson"
+	"github.com/karaoke-tools/kmlint/internal/ass"
+	"github.com/karaoke-tools/kmlint/internal/karajson"
 )
 
 // Song information
