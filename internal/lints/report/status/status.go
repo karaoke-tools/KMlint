@@ -7,22 +7,10 @@ package status
 
 type Status int
 
+//go:generate go tool stringer -type Status -linecomment
 const (
-	Unknown Status = iota
-	Completed
-	Aborted
-	Skipped
+	Unknown   Status = iota // unknown status
+	Completed               // completed
+	Aborted                 // aborted
+	Skipped                 //skipped
 )
-
-func (s Status) String() string {
-	switch s {
-	case Completed:
-		return "completed"
-	case Aborted:
-		return "aborted"
-	case Skipped:
-		return "skipped"
-	default:
-		return "unknown status"
-	}
-}

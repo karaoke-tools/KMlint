@@ -5,26 +5,20 @@
 
 package severity
 
+//go:generate go tool stringer -type Severity -linecomment
+
 type Severity int
 
 const (
-	Unknown  Severity = iota // no info
-	Critical                 // there is something to be corrected
-	Warning                  // maintainer should have a look at it, but may decide to ignore it
-	Info                     // maintainer can safely ignore this info
-)
+	// No info
+	Unknown Severity = iota // unknown
 
-func (s Severity) String() string {
-	switch s {
-	case Critical:
-		return "critical"
-	case Warning:
-		return "warning"
-	case Info:
-		return "info"
-	case Unknown:
-		fallthrough
-	default:
-		return "unknown"
-	}
-}
+	// There is something to be corrected
+	Critical // critical
+
+	// Maintainer should have a look at it, but may decide to ignore it
+	Warning // warning
+
+	// Maintainer can safely ignore this info
+	Info // info
+)

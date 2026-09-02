@@ -7,21 +7,9 @@ package result
 
 type Result int
 
+//go:generate go tool stringer -type Result -linecomment
 const (
-	Unknown Result = iota
-	Passed
-	Failed
+	Unknown Result = iota // unknown result
+	Passed                // passed
+	Failed                // failed
 )
-
-func (r Result) String() string {
-	switch r {
-	case Passed:
-		return "passed"
-	case Failed:
-		return "failed"
-	case Unknown:
-		fallthrough
-	default:
-		return "unknown status"
-	}
-}

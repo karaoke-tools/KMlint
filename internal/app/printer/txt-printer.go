@@ -208,7 +208,7 @@ func (p TxtPrinter) encodeAggregator(ctx context.Context, a *lints.Aggregator, b
 			if r.Severity() != severity.Info {
 				builder.WriteString(fmt.Sprintf("[%s (%s)]", r.Result(), r.Severity()))
 			} else {
-				builder.WriteString("[info]")
+				builder.WriteString(fmt.Sprintf("[%s]", r.Severity()))
 			}
 		}
 

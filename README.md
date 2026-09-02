@@ -20,7 +20,7 @@ However, I hope it will help you making better karaokes and following your repos
 
 ## Supported platforms
 I intend to support the same set of platform Karaoke Mugen does by the release of v1.0.0.
-Currently, has only be tested on Debian 12, not extensively.
+Currently, has only be tested on Debian 13, not extensively.
 
 If you have issues running it on your platform, please [report it](https://github.com/karaoke-tools/kmlint/issues).
 Please note that I don't have any MacOS or Windows license, so I cannot test on those platforms myself,
