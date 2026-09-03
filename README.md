@@ -129,7 +129,8 @@ $ go install github.com/karaoke-tools/kmlint@vX.Y.Z
 ##### Install
 Run: `sudo make install`
 
-With this last method, bash auto-completions will be installed automatically.
+With this last method, bash/fish/zsh auto-completions will be installed automatically
+(they will become available after next shell login).
 
 ##### Uninstall
 Run: `sudo make uninstall`
