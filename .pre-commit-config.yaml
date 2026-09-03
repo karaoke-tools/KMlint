@@ -9,6 +9,12 @@ repos:
       - id: no-commit-to-branch
   - repo: local
     hooks:
+      - id: go-fix
+        name: go fix
+        entry: go fix ./...
+        language: system
+        pass_filenames: false
+        files: 'go.mod'
       - id: go-generate
         name: go generate
         entry: go generate ./...
