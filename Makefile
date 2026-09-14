@@ -2,7 +2,8 @@ prefix = /usr/local
 exec_prefix = $(prefix)
 bindir = $(exec_prefix)/bin
 BASHCOMPLETIONSDIR = $(exec_prefix)/share/bash-completion/completions
-FISHCOMPLETIONSDIR = $(shell pkg-config fish --variable completionsdir)
+# TODO: follow XDG, see <https://manpages.debian.org/testing/fish-common/fish-completions.1.en.html>
+FISHCOMPLETIONSDIR = /usr/share/fish/vendor_completions.d
 ZSHCOMPLETIONSDIR = $(exec_prefix)/share/zsh/site-functions
 
 
@@ -18,6 +19,7 @@ clean:
 	@go clean
 reinstall: uninstall install
 install:
+	@#TODO: move this as an hidden "install" command of kmlint (and install completions only if the directory exists)
 	@$(INSTALL) kmlint $(DESTDIR)$(bindir)/kmlint
 	@$(MKDIRP) $(DESTDIR)$(BASHCOMPLETIONSDIR)
 	@$(DESTDIR)$(bindir)/kmlint completion bash > $(DESTDIR)$(BASHCOMPLETIONSDIR)/kmlint
