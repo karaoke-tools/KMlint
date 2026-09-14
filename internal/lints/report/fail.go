@@ -20,3 +20,18 @@ func Fail(severity severity.Severity, message string) *report {
 	r.result = result.Failed
 	return r
 }
+
+// Fails with [severity.Critical]
+func FailCritical(message string) *report {
+	return Fail(severity.Critical, message)
+}
+
+// Fails with [severity.Warning]
+func FailWarning(message string) *report {
+	return Fail(severity.Warning, message)
+}
+
+// Fails with [severity.Info]
+func FailInfo(message string) *report {
+	return Fail(severity.Info, message)
+}

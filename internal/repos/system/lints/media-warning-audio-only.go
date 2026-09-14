@@ -14,31 +14,10 @@ import (
 	"github.com/karaoke-tools/kmlint/internal/karajson/tag"
 	"github.com/karaoke-tools/kmlint/internal/lints/lint"
 	"github.com/karaoke-tools/kmlint/internal/lints/report"
-	"github.com/karaoke-tools/kmlint/internal/lints/report/severity"
 	"github.com/karaoke-tools/kmlint/internal/lints/skip/cond"
-	"github.com/karaoke-tools/kmlint/internal/repos/system/lints/baselint"
 	"github.com/karaoke-tools/kmlint/internal/repos/system/tags/songtype"
 	"github.com/karaoke-tools/kmlint/internal/repos/system/tags/warning"
 )
-
-type MediaWarningAudioOnly struct {
-	baselint.BaseLint
-	lint.WithDefault
-}
-
-func NewMediaWarningAudioOnly() lint.Lint {
-	return &MediaWarningAudioOnly{
-		baselint.New("media-warning-audio-only",
-			"media warning but this is an audio only kara",
-			cond.HasNoTagFrom{
-				TagType: tag.Songtypes,
-				Tags:    []karajson.Tid{songtype.AudioOnly},
-				Msg:     "not an audio only",
-			},
-		),
-		baselint.EnabledByDefault{},
-	}
-}
 
 // warnings that are related to the media
 var mediaWarnings []karajson.Tid = []karajson.Tid{
@@ -47,11 +26,23 @@ var mediaWarnings []karajson.Tid = []karajson.Tid{
 	warning.Epilepsy,
 }
 
-func (p MediaWarningAudioOnly) Run(ctx context.Context, KaraData *karadata.KaraData) (report.Report, error) {
-	for _, w := range mediaWarnings {
-		if slices.Contains(KaraData.KaraJson.Data.Tags.Warnings, w) {
-			return report.Fail(severity.Critical, "check warning tags (maybe a R18-media should be changed to R18-lyrics, maybe a tag should be removed)"), nil
-		}
+func MediaWarningAudioOnly() lint.Lint {
+	return lint.Lint{
+		Name:        "media-warning-audio-only",
+		Description: "media warning but this is an audio only kara",
+		SkipCond: cond.HasNoTagFrom{
+			TagType: tag.Songtypes,
+			Tags:    []karajson.Tid{songtype.AudioOnly},
+			Msg:     "not an audio only",
+		},
+		RunFunc: func(ctx context.Context, KaraData karadata.KaraData) (report.Report, error) {
+			for _, w := range mediaWarnings {
+				if slices.Contains(KaraData.KaraJson.Data.Tags.Warnings, w) {
+					return report.FailCritical("check warning tags " +
+						"(maybe a R18-media should be changed to R18-lyrics, maybe a tag should be removed)"), nil
+				}
+			}
+			return report.Pass(), nil
+		},
 	}
-	return report.Pass(), nil
 }

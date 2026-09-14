@@ -13,7 +13,7 @@ import (
 
 type HasNoSongorder struct{}
 
-func (h HasNoSongorder) Result(ctx context.Context, k *karadata.KaraData) (bool, string, error) {
+func (h HasNoSongorder) Result(ctx context.Context, k karadata.KaraData) (bool, string, error) {
 	if k.KaraJson.Data.Songorder == nil {
 		return true, "has no songorder", nil
 	}

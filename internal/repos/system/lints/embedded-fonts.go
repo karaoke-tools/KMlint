@@ -11,30 +11,21 @@ import (
 	"github.com/karaoke-tools/kmlint/internal/karadata"
 	"github.com/karaoke-tools/kmlint/internal/lints/lint"
 	"github.com/karaoke-tools/kmlint/internal/lints/report"
-	"github.com/karaoke-tools/kmlint/internal/lints/report/severity"
 	"github.com/karaoke-tools/kmlint/internal/lints/skip/cond"
-	"github.com/karaoke-tools/kmlint/internal/repos/system/lints/baselint"
 )
 
-type EmbeddedFonts struct {
-	baselint.BaseLint
-	lint.WithDefault
-}
-
-func NewEmbeddedFonts() lint.Lint {
-	return &EmbeddedFonts{
-		baselint.New("embedded-fonts",
-			"lyrics file embeds fonts",
-			cond.NoLyrics{},
-		),
-		baselint.EnabledByDefault{},
+func EmbeddedFonts() lint.Lint {
+	return lint.Lint{
+		Name:        "embedded-fonts",
+		Description: "lyrics file embeds fonts",
+		SkipCond:    cond.NoLyrics{},
+		RunFunc: func(ctx context.Context, KaraData karadata.KaraData) (report.Report, error) {
+			// TODO: update this when multi-track drifting is released
+			if KaraData.Lyrics[0].Fonts {
+				return report.FailCritical(
+					"lyrics file embeds fonts; consider using standard fonts instead because fonts embedding creates big lyrics file"), nil
+			}
+			return report.Pass(), nil
+		},
 	}
-}
-
-func (p EmbeddedFonts) Run(ctx context.Context, KaraData *karadata.KaraData) (report.Report, error) {
-	// TODO: update this when multi-track drifting is released
-	if KaraData.Lyrics[0].Fonts {
-		return report.Fail(severity.Critical, "lyrics file embeds fonts; consider using standard fonts instead because fonts embedding creates big lyrics file"), nil
-	}
-	return report.Pass(), nil
 }

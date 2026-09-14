@@ -13,7 +13,7 @@ import (
 
 type HasParent struct{}
 
-func (h HasParent) Result(ctx context.Context, k *karadata.KaraData) (bool, string, error) {
+func (h HasParent) Result(ctx context.Context, k karadata.KaraData) (bool, string, error) {
 	if len(k.KaraJson.Data.Parents) > 0 {
 		return true, "has parent", nil
 	}

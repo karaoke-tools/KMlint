@@ -10,25 +10,27 @@ import (
 	"github.com/karaoke-tools/kmlint/internal/lints/lint"
 )
 
+const PKG_NAME = "kara-moe"
+
 func init() {
 	lints.Register([]lint.Lint{
-		NewAltVersionWithoutParent(),
-		NewAudioOnlyCreditless(),
-		NewAutomationAppliedFurigana(),
-		NewAutomationAppliedNoFurigana(),
-		NewCreditless(),
-		NewDoubleConsonant(),
-		NewFullAudioOnlyOrigin(),
-		NewFullAudioOnlySongtype(),
-		NewLiveDownload(),
-		NewLongTagOnShortMedia(),
-		NewMusicVideoCreditless(),
-		NewNoOrigin(),
-		NewSongorderNoOpEd(),
-		NewSongtypeConflict(),
-		NewStyleSingleWhite(),
-		NewVersionConflict(),
-		NewVowelMacron(),
-		NewWrongTsuSeparation(),
+		AltVersionWithoutParent(),
+		AudioOnlyCreditless(),
+		AutomationAppliedFurigana(),
+		AutomationAppliedNoFurigana(),
+		Creditless(),
+		DoubleConsonant(),
+		FullAudioOnlyOrigin(),
+		FullAudioOnlySongtype(),
+		LiveDownload(),
+		LongTagOnShortMedia(),
+		MusicVideoCreditless(),
+		NoOrigin(),
+		SongorderNoOpEd(),
+		SongtypeConflict(),
+		StyleSingleWhite(),
+		VersionConflict(),
+		VowelMacron(),
+		WrongTsuSeparation(),
 	})
 }

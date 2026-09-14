@@ -30,7 +30,7 @@ type Report interface {
 	Delete()
 }
 
-func (r *report) MarshalJSONTo(enc *jsontext.Encoder) error {
+func (r report) MarshalJSONTo(enc *jsontext.Encoder) error {
 	m := map[string]string{
 		"result":   r.result.String(),
 		"severity": r.severity.String(),
@@ -96,18 +96,18 @@ func (r *report) Delete() {
 	reportPool.Put(r)
 }
 
-func (r *report) Status() status.Status {
+func (r report) Status() status.Status {
 	return r.status
 }
 
-func (r *report) Result() result.Result {
+func (r report) Result() result.Result {
 	return r.result
 }
 
-func (r *report) Severity() severity.Severity {
+func (r report) Severity() severity.Severity {
 	return r.severity
 }
 
-func (r *report) Message() string {
+func (r report) Message() string {
 	return r.message
 }

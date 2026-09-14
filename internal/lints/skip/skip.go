@@ -12,5 +12,5 @@ import (
 )
 
 type Condition interface {
-	Result(context.Context, *karadata.KaraData) (bool, string, error)
+	Result(context.Context, karadata.KaraData) (bool, string, error)
 }

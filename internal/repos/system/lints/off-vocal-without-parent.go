@@ -15,33 +15,24 @@ import (
 	"github.com/karaoke-tools/kmlint/internal/lints/report"
 	"github.com/karaoke-tools/kmlint/internal/lints/report/severity"
 	"github.com/karaoke-tools/kmlint/internal/lints/skip/cond"
-	"github.com/karaoke-tools/kmlint/internal/repos/system/lints/baselint"
 	"github.com/karaoke-tools/kmlint/internal/repos/system/tags/version"
 )
 
-type OffVocalWithoutParent struct {
-	baselint.BaseLint
-	lint.WithDefault
-}
+func OffVocalWithoutParent() lint.Lint {
+	return lint.Lint{
+		Name:        "off-vocal-without-parent",
+		Description: "off vocal but no parent",
+		SkipCond: cond.HasNoTagFrom{
+			TagType: tag.Versions,
+			Tags:    []karajson.Tid{version.OffVocal},
+			Msg:     "not an off vocal",
+		},
+		RunFunc: func(ctx context.Context, KaraData karadata.KaraData) (report.Report, error) {
+			if len(KaraData.KaraJson.Data.Parents) == 0 {
+				return report.Fail(severity.Critical, "add the right parent"), nil
+			}
 
-func NewOffVocalWithoutParent() lint.Lint {
-	return &OffVocalWithoutParent{
-		baselint.New("off-vocal-without-parent",
-			"off vocal but no parent",
-			cond.HasNoTagFrom{
-				TagType: tag.Versions,
-				Tags:    []karajson.Tid{version.OffVocal},
-				Msg:     "not an off vocal",
-			},
-		),
-		baselint.EnabledByDefault{},
+			return report.Pass(), nil
+		},
 	}
-}
-
-func (p OffVocalWithoutParent) Run(ctx context.Context, KaraData *karadata.KaraData) (report.Report, error) {
-	if len(KaraData.KaraJson.Data.Parents) == 0 {
-		return report.Fail(severity.Critical, "add the right parent"), nil
-	}
-
-	return report.Pass(), nil
 }

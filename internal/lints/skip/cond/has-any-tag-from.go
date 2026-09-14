@@ -19,7 +19,7 @@ type HasAnyTagFrom struct {
 	Msg     string
 }
 
-func (h HasAnyTagFrom) Result(ctx context.Context, k *karadata.KaraData) (bool, string, error) {
+func (h HasAnyTagFrom) Result(ctx context.Context, k karadata.KaraData) (bool, string, error) {
 	if b := k.KaraJson.HasAnyTagFrom(h.TagType, h.Tags); b {
 		return true, h.Msg, nil
 	}

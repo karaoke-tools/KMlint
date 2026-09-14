@@ -15,49 +15,39 @@ import (
 	"github.com/karaoke-tools/kmlint/internal/karajson/tag"
 	"github.com/karaoke-tools/kmlint/internal/lints/lint"
 	"github.com/karaoke-tools/kmlint/internal/lints/report"
-	"github.com/karaoke-tools/kmlint/internal/lints/report/severity"
 	"github.com/karaoke-tools/kmlint/internal/lints/skip/cond"
-	"github.com/karaoke-tools/kmlint/internal/repos/system/lints/baselint"
 	"github.com/karaoke-tools/kmlint/internal/repos/system/tags/language"
 )
 
-type SpaceBeforeDoublePunctuation struct {
-	baselint.BaseLint
-	lint.WithDefault
-}
-
-func NewSpaceBeforeDoublePunctuation() lint.Lint {
-	return &SpaceBeforeDoublePunctuation{
-		baselint.New("space-before-double-punctuation",
-			"space before double punctuation (JPN/ENG only)",
-			cond.Any{
-				cond.NoLyrics{},
-				cond.HasTagsNotFrom{
-					TagType: tag.Langs,
-					Tags:    []karajson.Tid{language.JPN, language.ENG},
-					Msg:     "non english/japanese language",
-				},
+func SpaceBeforeDoublePunctuation() lint.Lint {
+	return lint.Lint{
+		Name:        "space-before-double-punctuation",
+		Description: "space before double punctuation (JPN/ENG only)",
+		SkipCond: cond.Any{
+			cond.NoLyrics{},
+			cond.HasTagsNotFrom{
+				TagType: tag.Langs,
+				Tags:    []karajson.Tid{language.JPN, language.ENG},
+				Msg:     "non english/japanese language",
 			},
-		),
-		baselint.EnabledByDefault{},
-	}
-}
-
-func (p SpaceBeforeDoublePunctuation) Run(ctx context.Context, KaraData *karadata.KaraData) (report.Report, error) {
-	// TODO: update this when multi-track drifting is released
-	for _, line := range KaraData.Lyrics[0].Events {
-		select {
-		case <-ctx.Done():
-			return report.Abort(), ctx.Err()
-		default:
-			if (line.Type != lyrics.Format) && !((line.Type == lyrics.Comment) && (line.Effect != "karaoke")) {
-				l := line.Text.StripTags()
-				if strings.Contains(l, " ?") || strings.Contains(l, " !") ||
-					strings.Contains(l, " ?") || strings.Contains(l, " !") { // non-breakable space
-					return report.Fail(severity.Critical, "remove space before `?`/`!`"), nil
+		},
+		RunFunc: func(ctx context.Context, KaraData karadata.KaraData) (report.Report, error) {
+			// TODO: update this when multi-track drifting is released
+			for _, line := range KaraData.Lyrics[0].Events {
+				select {
+				case <-ctx.Done():
+					return report.Abort(), ctx.Err()
+				default:
+					if (line.Type != lyrics.Format) && !((line.Type == lyrics.Comment) && (line.Effect != "karaoke")) {
+						l := line.Text.StripTags()
+						if strings.Contains(l, " ?") || strings.Contains(l, " !") ||
+							strings.Contains(l, " ?") || strings.Contains(l, " !") { // non-breakable space
+							return report.FailCritical("remove space before `?`/`!`"), nil
+						}
+					}
 				}
 			}
-		}
+			return report.Pass(), nil
+		},
 	}
-	return report.Pass(), nil
 }

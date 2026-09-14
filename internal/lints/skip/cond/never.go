@@ -13,6 +13,6 @@ import (
 
 type Never struct{}
 
-func (n Never) Result(ctx context.Context, k *karadata.KaraData) (bool, string, error) {
+func (n Never) Result(ctx context.Context, k karadata.KaraData) (bool, string, error) {
 	return false, "", nil
 }

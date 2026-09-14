@@ -15,7 +15,7 @@ import (
 
 type HasNotVideoExtension struct{}
 
-func (h HasNotVideoExtension) Result(ctx context.Context, k *karadata.KaraData) (bool, string, error) {
+func (h HasNotVideoExtension) Result(ctx context.Context, k karadata.KaraData) (bool, string, error) {
 	// TODO: multi-track drifting
 	filename := k.KaraJson.Medias[0].Filename
 	startExt := strings.LastIndexByte(filename, '.')

@@ -15,40 +15,10 @@ import (
 	"github.com/karaoke-tools/kmlint/internal/karajson/tag"
 	"github.com/karaoke-tools/kmlint/internal/lints/lint"
 	"github.com/karaoke-tools/kmlint/internal/lints/report"
-	"github.com/karaoke-tools/kmlint/internal/lints/report/severity"
 	"github.com/karaoke-tools/kmlint/internal/lints/skip/cond"
-	"github.com/karaoke-tools/kmlint/internal/repos/karamoe/lints/baselint"
 	"github.com/karaoke-tools/kmlint/internal/repos/karamoe/tags/collection"
 	"github.com/karaoke-tools/kmlint/internal/repos/system/tags/language"
 )
-
-type DoubleConsonant struct {
-	baselint.BaseLint
-	lint.WithDefault
-}
-
-func NewDoubleConsonant() lint.Lint {
-	return &DoubleConsonant{
-		baselint.New(
-			"double-consonant",
-			"double consonant in same k-tag (JPN romaji only)",
-			cond.Any{
-				cond.NoLyrics{},
-				cond.HasAnyTagFrom{
-					TagType: tag.Collections,
-					Tags:    []karajson.Tid{collection.NonLatin},
-					Msg:     "non-latin script song",
-				},
-				cond.HasTagsNotFrom{
-					TagType: tag.Langs,
-					Tags:    []karajson.Tid{language.JPN},
-					Msg:     "not a japanese only version",
-				},
-			},
-		),
-		baselint.EnabledByDefault{},
-	}
-}
 
 var doubleConsonants = []string{
 	"kk",
@@ -70,39 +40,58 @@ var doubleConsonants = []string{
 	"cc",
 }
 
-func (p DoubleConsonant) Run(ctx context.Context, KaraData *karadata.KaraData) (report.Report, error) {
-	// TODO: update this when multi-track drifting is released
-	for _, line := range KaraData.Lyrics[0].Events {
-		select {
-		case <-ctx.Done():
-			return report.Abort(), ctx.Err()
-		default:
-			if (line.Type != lyrics.Format) && (!(line.Type == lyrics.Comment && strings.HasPrefix(line.Effect, "template"))) {
-				save := " " // must end with a space to consider the first word of the line as a new word
-				for _, syll := range line.Text.TagsSplit {
-					select {
-					case <-ctx.Done():
-						return report.Abort(), ctx.Err()
-					default:
-						if !strings.HasPrefix(syll, "{") {
-							if !strings.HasSuffix(save, " ") { // this is not a new word
-								for _, double := range doubleConsonants {
-									if strings.HasPrefix(syll, double) {
-										return report.Fail(severity.Critical,
-											"check for double consonants: "+
-												"there is at least an uncorrectly splitted `"+
-												strings.TrimSpace(syll)+"`"), nil
-									}
-								}
+func DoubleConsonant() lint.Lint {
+	return lint.Lint{
+		Pkg:         PKG_NAME,
+		Name:        "double-consonant",
+		Description: "double consonant in same k-tag (JPN romaji only)",
+		SkipCond: cond.Any{
+			cond.NoLyrics{},
+			cond.HasAnyTagFrom{
+				TagType: tag.Collections,
+				Tags:    []karajson.Tid{collection.NonLatin},
+				Msg:     "non-latin script song",
+			},
+			cond.HasTagsNotFrom{
+				TagType: tag.Langs,
+				Tags:    []karajson.Tid{language.JPN},
+				Msg:     "not a japanese only version",
+			},
+		},
+		RunFunc: func(ctx context.Context, KaraData karadata.KaraData) (report.Report, error) {
+			// TODO: update this when multi-track drifting is released
+			for _, line := range KaraData.Lyrics[0].Events {
+				select {
+				case <-ctx.Done():
+					return report.Abort(), ctx.Err()
+				default:
+					if (line.Type != lyrics.Format) && (!(line.Type == lyrics.Comment && strings.HasPrefix(line.Effect, "template"))) {
+						save := " " // must end with a space to consider the first word of the line as a new word
+						for _, syll := range line.Text.TagsSplit {
+							select {
+							case <-ctx.Done():
+								return report.Abort(), ctx.Err()
+							default:
+								if !strings.HasPrefix(syll, "{") {
+									if !strings.HasSuffix(save, " ") { // this is not a new word
+										for _, double := range doubleConsonants {
+											if strings.HasPrefix(syll, double) {
+												return report.FailCritical("check for double consonants: " +
+													"there is at least an uncorrectly splitted `" +
+													strings.TrimSpace(syll) + "`"), nil
+											}
+										}
 
+									}
+									save = syll
+								}
 							}
-							save = syll
+
 						}
 					}
-
 				}
 			}
-		}
+			return report.Pass(), nil
+		},
 	}
-	return report.Pass(), nil
 }

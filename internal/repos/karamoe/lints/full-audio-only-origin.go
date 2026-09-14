@@ -13,57 +13,46 @@ import (
 	"github.com/karaoke-tools/kmlint/internal/karajson/tag"
 	"github.com/karaoke-tools/kmlint/internal/lints/lint"
 	"github.com/karaoke-tools/kmlint/internal/lints/report"
-	"github.com/karaoke-tools/kmlint/internal/lints/report/severity"
 	"github.com/karaoke-tools/kmlint/internal/lints/skip/cond"
-	"github.com/karaoke-tools/kmlint/internal/repos/karamoe/lints/baselint"
 	"github.com/karaoke-tools/kmlint/internal/repos/karamoe/tags/origin"
 	"github.com/karaoke-tools/kmlint/internal/repos/karamoe/tags/songtype"
 	"github.com/karaoke-tools/kmlint/internal/repos/karamoe/tags/version"
 )
 
-type FullAudioOnlyOrigin struct {
-	baselint.BaseLint
-	lint.WithDefault
-}
-
-func NewFullAudioOnlyOrigin() lint.Lint {
-	return &FullAudioOnlyOrigin{
-		baselint.New(
-			"full-audio-only-origin",
-			"audio only song cannot have origin when they have not the same size than actual OP/ED/IN",
-			cond.Any{
-				cond.HasEmptyTagtype{
+func FullAudioOnlyOrigin() lint.Lint {
+	return lint.Lint{
+		Pkg:         PKG_NAME,
+		Name:        "full-audio-only-origin",
+		Description: "audio only song cannot have origin when they have not the same size than actual OP/ED/IN",
+		SkipCond: cond.Any{
+			cond.HasEmptyTagtype{
+				TagType: tag.Origins,
+				Msg:     "has no origin",
+			},
+			cond.All{
+				cond.HasLessTagsThan{
 					TagType: tag.Origins,
-					Msg:     "has no origin",
+					Number:  2,
+					Msg:     "has a single origin tag",
 				},
-				cond.All{
-					cond.HasLessTagsThan{
-						TagType: tag.Origins,
-						Number:  2,
-						Msg:     "has a single origin tag",
-					},
-					cond.HasAnyTagFrom{
-						TagType: tag.Origins,
-						Tags:    []karajson.Tid{origin.Vtuber},
-						Msg:     "vtuber tag",
-					},
-				},
-				cond.HasNoTagFrom{
-					TagType: tag.Versions,
-					Tags:    []karajson.Tid{version.Full},
-					Msg:     "is not a full version",
-				},
-				cond.HasNoTagFrom{
-					TagType: tag.Songtypes,
-					Tags:    []karajson.Tid{songtype.AUDIO},
-					Msg:     "is not an audio only",
+				cond.HasAnyTagFrom{
+					TagType: tag.Origins,
+					Tags:    []karajson.Tid{origin.Vtuber},
+					Msg:     "vtuber tag",
 				},
 			},
-		),
-		baselint.EnabledByDefault{},
-	}
-}
-
-func (p FullAudioOnlyOrigin) Run(ctx context.Context, KaraData *karadata.KaraData) (report.Report, error) {
-	return report.Fail(severity.Critical, "remove origin tag"), nil
+			cond.HasNoTagFrom{
+				TagType: tag.Versions,
+				Tags:    []karajson.Tid{version.Full},
+				Msg:     "is not a full version",
+			},
+			cond.HasNoTagFrom{
+				TagType: tag.Songtypes,
+				Tags:    []karajson.Tid{songtype.AUDIO},
+				Msg:     "is not an audio only",
+			},
+		},
+		RunFunc: func(ctx context.Context, KaraData karadata.KaraData) (report.Report, error) {
+			return report.FailCritical("remove origin tag"), nil
+		}}
 }

@@ -168,7 +168,7 @@ func (s GitSetup) Run(ctx context.Context) error {
 					s.StartWork()
 					wg.Go(func() {
 						defer s.StopWork()
-						app.RunOnFile(ctx, &repo, p, pr)
+						app.RunOnFile(ctx, repo, p, pr)
 					})
 				}
 			})

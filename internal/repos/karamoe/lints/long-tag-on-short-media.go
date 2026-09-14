@@ -12,30 +12,21 @@ import (
 	"github.com/karaoke-tools/kmlint/internal/karadata"
 	"github.com/karaoke-tools/kmlint/internal/lints/lint"
 	"github.com/karaoke-tools/kmlint/internal/lints/report"
-	"github.com/karaoke-tools/kmlint/internal/lints/report/severity"
 	"github.com/karaoke-tools/kmlint/internal/lints/skip/cond"
-	"github.com/karaoke-tools/kmlint/internal/repos/karamoe/lints/baselint"
 	"github.com/karaoke-tools/kmlint/internal/repos/karamoe/tags/misc"
 )
 
-type LongTagOnShortMedia struct {
-	baselint.BaseLint
-	lint.WithDefault
-}
-
-func NewLongTagOnShortMedia() lint.Lint {
-	return &LongTagOnShortMedia{
-		baselint.New("long-tag-on-short-media",
-			"long tag added manually",
-			cond.GreaterMediaDuration{Duration: 300},
-		),
-		baselint.EnabledByDefault{},
+func LongTagOnShortMedia() lint.Lint {
+	return lint.Lint{
+		Pkg:         PKG_NAME,
+		Name:        "long-tag-on-short-media",
+		Description: "long tag added manually",
+		SkipCond:    cond.GreaterMediaDuration{Duration: 300},
+		RunFunc: func(ctx context.Context, KaraData karadata.KaraData) (report.Report, error) {
+			if slices.Contains(KaraData.KaraJson.Data.Tags.Misc, misc.Long) {
+				return report.FailCritical("remove long tag"), nil
+			}
+			return report.Pass(), nil
+		},
 	}
-}
-
-func (p LongTagOnShortMedia) Run(ctx context.Context, KaraData *karadata.KaraData) (report.Report, error) {
-	if slices.Contains(KaraData.KaraJson.Data.Tags.Misc, misc.Long) {
-		return report.Fail(severity.Critical, "remove long tag"), nil
-	}
-	return report.Pass(), nil
 }

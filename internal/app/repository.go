@@ -19,7 +19,7 @@ type Repository struct {
 }
 
 // Run the given f function on all songs of a repository.
-func (repo *Repository) WalkSongs(ctx context.Context, f func(ctx context.Context, repo *Repository, p string) error) error {
+func (repo Repository) WalkSongs(ctx context.Context, f func(ctx context.Context, repo Repository, p string) error) error {
 	return filepath.WalkDir(filepath.Join(repo.BaseDir, "karaokes"), func(p string, d fs.DirEntry, err error) error {
 		// check file metadata
 		select {

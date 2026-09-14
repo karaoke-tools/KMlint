@@ -18,145 +18,141 @@ import (
 	"github.com/karaoke-tools/kmlint/internal/karajson/tag"
 	"github.com/karaoke-tools/kmlint/internal/lints/lint"
 	"github.com/karaoke-tools/kmlint/internal/lints/report"
-	"github.com/karaoke-tools/kmlint/internal/lints/report/severity"
 	"github.com/karaoke-tools/kmlint/internal/lints/skip/cond"
-	"github.com/karaoke-tools/kmlint/internal/repos/karamoe/lints/baselint"
 	"github.com/karaoke-tools/kmlint/internal/repos/karamoe/tags/misc"
 	"github.com/karaoke-tools/kmlint/internal/repos/karamoe/tags/origin"
 	"github.com/karaoke-tools/kmlint/internal/repos/system/tags/language"
 )
 
-type StyleSingleWhite struct {
-	baselint.BaseLint
-	lint.WithDefault
-}
-
-func NewStyleSingleWhite() lint.Lint {
-	return &StyleSingleWhite{
-		baselint.New("style-single-white",
-			"unfilled color is not white (only if single style)",
-			cond.Any{
-				cond.NoLyrics{},
-				cond.HasAnyTagFrom{
-					TagType: tag.Misc,
-					Tags:    []karajson.Tid{misc.GroupSinging},
-					Msg:     "group singing song", // we can use one color by voice
-				},
-				cond.HasMoreTagsThan{
-					TagType: tag.Langs,
-					Number:  1,
-					Msg:     "is multilingual song", // we can use one color by language
-				},
-				cond.HasAnyTagFrom{
-					TagType: tag.Langs,
-					Tags:    []karajson.Tid{language.MUL},
-					Msg:     "is multilingual song", // we can use one color by language
-				},
-				cond.HasAnyTagFrom{
-					TagType: tag.Origins,
-					Tags:    []karajson.Tid{origin.Musical},
-					// musicals often have dialogues,
-					// and it's okay to have multiple colors even if this is not a group singing song
-					Msg: "is from a musical",
-				},
+func StyleSingleWhite() lint.Lint {
+	return lint.Lint{
+		Pkg:         PKG_NAME,
+		Name:        "style-single-white",
+		Description: "unfilled color is not white (only if single style)",
+		SkipCond: cond.Any{
+			cond.NoLyrics{},
+			cond.HasAnyTagFrom{
+				TagType: tag.Misc,
+				Tags:    []karajson.Tid{misc.GroupSinging},
+				Msg:     "group singing song", // we can use one color by voice
 			},
-		),
-		baselint.EnabledByDefault{},
-	}
-}
+			cond.HasMoreTagsThan{
+				TagType: tag.Langs,
+				Number:  1,
+				Msg:     "is multilingual song", // we can use one color by language
+			},
+			cond.HasAnyTagFrom{
+				TagType: tag.Langs,
+				Tags:    []karajson.Tid{language.MUL},
+				Msg:     "is multilingual song", // we can use one color by language
+			},
+			cond.HasAnyTagFrom{
+				TagType: tag.Origins,
+				Tags:    []karajson.Tid{origin.Musical},
+				// musicals often have dialogues,
+				// and it's okay to have multiple colors even if this is not a group singing song
+				Msg: "is from a musical",
+			},
+		},
+		RunFunc: func(ctx context.Context, KaraData karadata.KaraData) (report.Report, error) {
+			nonWhiteChoirStyleCnt := 0 // detected choir: update secondary color (if non-group kara)
+			whiteChoirStyleCnt := 0    // detected choir: white secondary color
+			nonWhiteUnknownStyleCnt := 0
+			whiteUnknownStyleCnt := 0
+			unused := 0
 
-func (p StyleSingleWhite) Run(ctx context.Context, KaraData *karadata.KaraData) (report.Report, error) {
-	nonWhiteChoirStyleCnt := 0 // detected choir: update secondary color (if non-group kara)
-	whiteChoirStyleCnt := 0    // detected choir: white secondary color
-	nonWhiteUnknownStyleCnt := 0
-	whiteUnknownStyleCnt := 0
-	unused := 0
+			// TODO: update this when multi-track drifting is released
+			styles := make([]string, 0, len(KaraData.Lyrics[0].Styles)-1)
 
-	// TODO: update this when multi-track drifting is released
-	styles := make([]string, 0, len(KaraData.Lyrics[0].Styles)-1)
-
-	// list of used styles
-	for _, line := range KaraData.Lyrics[0].Events {
-		select {
-		case <-ctx.Done():
-			return report.Abort(), ctx.Err()
-		default:
-			if line.Type != lyrics.Dialogue {
-				continue
-			}
-			for _, style := range line.Styles() {
+			// list of used styles
+			for _, line := range KaraData.Lyrics[0].Events {
 				select {
 				case <-ctx.Done():
 					return report.Abort(), ctx.Err()
 				default:
-					if !slices.Contains(styles, style) {
-						styles = append(styles, style)
+					if line.Type != lyrics.Dialogue {
+						continue
+					}
+					for _, style := range line.Styles() {
+						select {
+						case <-ctx.Done():
+							return report.Abort(), ctx.Err()
+						default:
+							if !slices.Contains(styles, style) {
+								styles = append(styles, style)
+							}
+						}
+					}
+				}
+
+			}
+
+			// TODO: update this when multi-track drifting is released
+			for _, line := range KaraData.Lyrics[0].Styles {
+				select {
+				case <-ctx.Done():
+					return report.Abort(), ctx.Err()
+				default:
+					if !strings.HasPrefix(line, "Style: ") {
+						// ignore format line
+						continue
+					}
+					s, err := style.Parse(strings.TrimPrefix(line, "Style: "))
+					if err != nil {
+						return report.Abort(), err
+					}
+					if !slices.Contains(styles, s.Name) {
+						// unused style
+						unused++
+						continue
+					}
+					l_name := strings.ToLower(s.Name)
+					if strings.Contains(l_name, "-furigana") {
+						continue
+					}
+					choir := strings.Contains(l_name, "choir") ||
+						(s.Italic == "-1" && (s.MarginV == "80") || s.MarginV == "70") || // try to detect choirs
+						strings.Contains(l_name, "spoken") ||
+						strings.Contains(l_name, "dialogue") ||
+						strings.Contains(l_name, "rubyscript") // when mixing rubscript lines with normal lines (2 template scripts)
+					if s.SecondaryColour == colour.White {
+						if choir {
+							whiteChoirStyleCnt++
+						} else {
+							whiteUnknownStyleCnt++
+						}
+					} else {
+						if choir {
+							nonWhiteChoirStyleCnt++
+						} else {
+							nonWhiteUnknownStyleCnt++
+						}
 					}
 				}
 			}
-		}
+			if nonWhiteUnknownStyleCnt == 1 {
+				return report.FailCritical("update style: secondary color must be white"), nil
+			}
+			if nonWhiteUnknownStyleCnt > 1 {
+				return report.FailCritical("if this is a group song, add the \"group-singing\" tag; " +
+					"if this is a multi-lingual song (with a color per language), " +
+					"add the missing lang tag; else make all secondary colors white"), nil
+			}
+			if nonWhiteChoirStyleCnt == 1 {
+				return report.FailWarning("consider updating the secondary color of the choir style to white"), nil
+			}
+			if whiteUnknownStyleCnt > 1 {
+				return report.FailWarning("found multiple styles with white as secondary color: " +
+					"should it be converted to group singing song?"), nil
+			}
+			// TODO: update this when multi-track drifting is released
+			if unused > 0 {
+				return report.FailInfo("found some styles not used by Dialogue lines: " +
+					"if you are integrating this song make sure to enable the \"cleanup lyrics\" function in Karaoke Mugen " +
+					"(or maybe a style is used only by a Comment line?)"), nil
+			}
 
+			return report.Pass(), nil
+		},
 	}
-
-	// TODO: update this when multi-track drifting is released
-	for _, line := range KaraData.Lyrics[0].Styles {
-		select {
-		case <-ctx.Done():
-			return report.Abort(), ctx.Err()
-		default:
-			if !strings.HasPrefix(line, "Style: ") {
-				// ignore format line
-				continue
-			}
-			s, err := style.Parse(strings.TrimPrefix(line, "Style: "))
-			if err != nil {
-				return report.Abort(), err
-			}
-			if !slices.Contains(styles, s.Name) {
-				// unused style
-				unused++
-				continue
-			}
-			l_name := strings.ToLower(s.Name)
-			if strings.Contains(l_name, "-furigana") {
-				continue
-			}
-			choir := strings.Contains(l_name, "choir") ||
-				(s.Italic == "-1" && (s.MarginV == "80") || s.MarginV == "70") || // try to detect choirs
-				strings.Contains(l_name, "spoken") ||
-				strings.Contains(l_name, "dialogue") ||
-				strings.Contains(l_name, "rubyscript") // when mixing rubscript lines with normal lines (2 template scripts)
-			if s.SecondaryColour == colour.White {
-				if choir {
-					whiteChoirStyleCnt++
-				} else {
-					whiteUnknownStyleCnt++
-				}
-			} else {
-				if choir {
-					nonWhiteChoirStyleCnt++
-				} else {
-					nonWhiteUnknownStyleCnt++
-				}
-			}
-		}
-	}
-	if nonWhiteUnknownStyleCnt == 1 {
-		return report.Fail(severity.Critical, "update style: secondary color must be white"), nil
-	}
-	if nonWhiteUnknownStyleCnt > 1 {
-		return report.Fail(severity.Critical, "if this is a group song, add the \"group-singing\" tag; if this is a multi-lingual song (with a color per language), add the missing lang tag; else make all secondary colors white"), nil
-	}
-	if nonWhiteChoirStyleCnt == 1 {
-		return report.Fail(severity.Warning, "consider updating the secondary color of the choir style to white"), nil
-	}
-	if whiteUnknownStyleCnt > 1 {
-		return report.Fail(severity.Warning, "found multiple styles with white as secondary color: should it be converted to group singing song?"), nil
-	}
-	// TODO: update this when multi-track drifting is released
-	if unused > 0 {
-		return report.Fail(severity.Info, "found some styles not used by Dialogue lines: if you are integrating this song make sure to enable the \"cleanup lyrics\" function in Karaoke Mugen (or maybe a style is used only by a Comment line?)"), nil
-	}
-
-	return report.Pass(), nil
 }

@@ -16,18 +16,18 @@ import (
 
 // Song information
 type KaraData struct {
-	KaraJson *karajson.KaraJson // metadata of the song
-	Lyrics   []*ass.Ass         // lyrics of the song
+	KaraJson karajson.KaraJson // metadata of the song
+	Lyrics   []*ass.Ass        // lyrics of the song
 }
 
 // Create a new `KaraData` from a `KaraJson`
-func FromKaraJson(ctx context.Context, basedir string, karaJson *karajson.KaraJson) (*KaraData, error) {
+func FromKaraJson(ctx context.Context, basedir string, karaJson karajson.KaraJson) (KaraData, error) {
 	select {
 	case <-ctx.Done():
-		return nil, ctx.Err()
+		return KaraData{}, ctx.Err()
 	default:
 		if len(karaJson.Medias) == 0 {
-			return nil, ErrNoMedias
+			return KaraData{}, ErrNoMedias
 		}
 		data := KaraData{
 			KaraJson: karaJson,
@@ -38,16 +38,16 @@ func FromKaraJson(ctx context.Context, basedir string, karaJson *karajson.KaraJs
 			lyricsPath := path.Join(basedir, "lyrics", l.Filename)
 			f, err := os.OpenFile(lyricsPath, os.O_RDONLY, 0)
 			if err != nil {
-				return nil, err
+				return KaraData{}, err
 			}
 			defer f.Close()
 
 			lyrics, err := ass.Parse(ctx, f)
 			if err != nil {
-				return nil, err
+				return KaraData{}, err
 			}
 			data.Lyrics = append(data.Lyrics, lyrics)
 		}
-		return &data, nil
+		return data, nil
 	}
 }

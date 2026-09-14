@@ -14,35 +14,25 @@ import (
 	"github.com/karaoke-tools/kmlint/internal/karajson/tag"
 	"github.com/karaoke-tools/kmlint/internal/lints/lint"
 	"github.com/karaoke-tools/kmlint/internal/lints/report"
-	"github.com/karaoke-tools/kmlint/internal/lints/report/severity"
 	"github.com/karaoke-tools/kmlint/internal/lints/skip/cond"
-	"github.com/karaoke-tools/kmlint/internal/repos/system/lints/baselint"
 	"github.com/karaoke-tools/kmlint/internal/repos/system/tags/language"
 	"github.com/karaoke-tools/kmlint/internal/repos/system/tags/warning"
 )
 
-type LyricsWarningZXX struct {
-	baselint.BaseLint
-	lint.WithDefault
-}
-
-func NewLyricsWarningZXX() lint.Lint {
-	return &LyricsWarningZXX{
-		baselint.New("lyrics-warning-zxx",
-			"lyrics warning, but there is no linguistical content",
-			cond.HasNoTagFrom{
-				TagType: tag.Warnings,
-				Tags:    []karajson.Tid{warning.R18Lyrics},
-				Msg:     "no lyrics-warning tag",
-			},
-		),
-		baselint.EnabledByDefault{},
+func LyricsWarningZXX() lint.Lint {
+	return lint.Lint{
+		Name:        "lyrics-warning-zxx",
+		Description: "lyrics warning, but there is no linguistical content",
+		SkipCond: cond.HasNoTagFrom{
+			TagType: tag.Warnings,
+			Tags:    []karajson.Tid{warning.R18Lyrics},
+			Msg:     "no lyrics-warning tag",
+		},
+		RunFunc: func(ctx context.Context, KaraData karadata.KaraData) (report.Report, error) {
+			if slices.Contains(KaraData.KaraJson.Data.Tags.Langs, language.ZXX) {
+				return report.FailCritical("check if lyrics warning is relevant, and if the Langs field is set"), nil
+			}
+			return report.Pass(), nil
+		},
 	}
-}
-
-func (p LyricsWarningZXX) Run(ctx context.Context, KaraData *karadata.KaraData) (report.Report, error) {
-	if slices.Contains(KaraData.KaraJson.Data.Tags.Langs, language.ZXX) {
-		return report.Fail(severity.Critical, "check if lyrics warning is relevant, and if the Langs field is set"), nil
-	}
-	return report.Pass(), nil
 }

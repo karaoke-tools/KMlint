@@ -13,65 +13,55 @@ import (
 	"github.com/karaoke-tools/kmlint/internal/karadata"
 	"github.com/karaoke-tools/kmlint/internal/lints/lint"
 	"github.com/karaoke-tools/kmlint/internal/lints/report"
-	"github.com/karaoke-tools/kmlint/internal/lints/report/severity"
 	"github.com/karaoke-tools/kmlint/internal/lints/skip/cond"
-	"github.com/karaoke-tools/kmlint/internal/repos/system/lints/baselint"
 )
 
-type EolPunctuation struct {
-	baselint.BaseLint
-	lint.WithDefault
-}
-
-func NewEolPunctuation() lint.Lint {
-	return &EolPunctuation{
-		baselint.New("eol-punctuation",
-			"non-significant punctuation at end-of-lines",
-			cond.NoLyrics{},
-		),
-		baselint.EnabledByDefault{},
-	}
-}
-
-func (p EolPunctuation) Run(ctx context.Context, KaraData *karadata.KaraData) (report.Report, error) {
-	// TODO: update this when multi-track drifting is released
-	hasKaraokeEffectLines := false
-	// We need to check on karaoke comment lines, because the karaoke template may create a line per word (karaokes with furigana).
-	for _, line := range KaraData.Lyrics[0].Events {
-		select {
-		case <-ctx.Done():
-			return report.Abort(), ctx.Err()
-		default:
-			if (line.Type != lyrics.Format) && (line.Type == lyrics.Comment) && (line.Effect == "karaoke") {
-				hasKaraokeEffectLines = true
-				l := line.Text.StripTags()
-				if strings.HasSuffix(l, ".") || strings.HasSuffix(l, ",") {
-					if strings.HasSuffix(l, "...") {
-						continue
-					}
-					return report.Fail(severity.Critical, "remove useless punctuation (`.` or `,`) at end of line"), nil
-				}
-			}
-		}
-	}
-	if !hasKaraokeEffectLines { // fallback, for old karaokes
-		for _, line := range KaraData.Lyrics[0].Events {
-			select {
-			case <-ctx.Done():
-				return report.Abort(), ctx.Err()
-			default:
-				if (line.Type != lyrics.Format) && (line.Type != lyrics.Comment) {
-					hasKaraokeEffectLines = true
-					l := line.Text.StripTags()
-					if strings.HasSuffix(l, ".") || strings.HasSuffix(l, ",") {
-						if strings.HasSuffix(l, "...") {
-							continue
+func EolPunctuation() lint.Lint {
+	return lint.Lint{
+		Name:        "eol-punctuation",
+		Description: "non-significant punctuation at end-of-lines",
+		SkipCond:    cond.NoLyrics{},
+		RunFunc: func(ctx context.Context, KaraData karadata.KaraData) (report.Report, error) {
+			// TODO: update this when multi-track drifting is released
+			hasKaraokeEffectLines := false
+			// We need to check on karaoke comment lines, because the karaoke template may create a line per word (karaokes with furigana).
+			for _, line := range KaraData.Lyrics[0].Events {
+				select {
+				case <-ctx.Done():
+					return report.Abort(), ctx.Err()
+				default:
+					if (line.Type != lyrics.Format) && (line.Type == lyrics.Comment) && (line.Effect == "karaoke") {
+						hasKaraokeEffectLines = true
+						l := line.Text.StripTags()
+						if strings.HasSuffix(l, ".") || strings.HasSuffix(l, ",") {
+							if strings.HasSuffix(l, "...") {
+								continue
+							}
+							return report.FailCritical("remove useless punctuation (`.` or `,`) at end of line"), nil
 						}
-						return report.Fail(severity.Critical, "remove useless punctuation (`.` or `,`) at end of line"), nil
 					}
 				}
 			}
-		}
+			if !hasKaraokeEffectLines { // fallback, for old karaokes
+				for _, line := range KaraData.Lyrics[0].Events {
+					select {
+					case <-ctx.Done():
+						return report.Abort(), ctx.Err()
+					default:
+						if (line.Type != lyrics.Format) && (line.Type != lyrics.Comment) {
+							hasKaraokeEffectLines = true
+							l := line.Text.StripTags()
+							if strings.HasSuffix(l, ".") || strings.HasSuffix(l, ",") {
+								if strings.HasSuffix(l, "...") {
+									continue
+								}
+								return report.FailCritical("remove useless punctuation (`.` or `,`) at end of line"), nil
+							}
+						}
+					}
+				}
+			}
+			return report.Pass(), nil
+		},
 	}
-	return report.Pass(), nil
 }

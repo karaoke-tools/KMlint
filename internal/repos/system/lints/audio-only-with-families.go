@@ -13,34 +13,24 @@ import (
 	"github.com/karaoke-tools/kmlint/internal/karajson/tag"
 	"github.com/karaoke-tools/kmlint/internal/lints/lint"
 	"github.com/karaoke-tools/kmlint/internal/lints/report"
-	"github.com/karaoke-tools/kmlint/internal/lints/report/severity"
 	"github.com/karaoke-tools/kmlint/internal/lints/skip/cond"
-	"github.com/karaoke-tools/kmlint/internal/repos/system/lints/baselint"
 	"github.com/karaoke-tools/kmlint/internal/repos/system/tags/songtype"
 )
 
-type AudioOnlyWithFamilies struct {
-	baselint.BaseLint
-	lint.WithDefault
-}
-
-func NewAudioOnlyWithFamilies() lint.Lint {
-	return &AudioOnlyWithFamilies{
-		baselint.New("audio-only-with-families",
-			"media content tag including both audio only tag and other tags at the same time",
-			cond.HasNoTagFrom{
-				TagType: tag.Songtypes,
-				Tags:    []karajson.Tid{songtype.AudioOnly},
-				Msg:     "not an audio only",
-			},
-		),
-		baselint.EnabledByDefault{},
+func AudioOnlyWithFamilies() lint.Lint {
+	return lint.Lint{
+		Name:        "audio-only-with-families",
+		Description: "media content tag including both audio only tag and other tags at the same time",
+		SkipCond: cond.HasNoTagFrom{
+			TagType: tag.Songtypes,
+			Tags:    []karajson.Tid{songtype.AudioOnly},
+			Msg:     "not an audio only",
+		},
+		RunFunc: func(ctx context.Context, KaraData karadata.KaraData) (report.Report, error) {
+			if len(KaraData.KaraJson.Data.Tags.Families) > 0 {
+				return report.FailCritical("an audio only media cannot have a content type (family)"), nil
+			}
+			return report.Pass(), nil
+		},
 	}
-}
-
-func (p AudioOnlyWithFamilies) Run(ctx context.Context, KaraData *karadata.KaraData) (report.Report, error) {
-	if len(KaraData.KaraJson.Data.Tags.Families) > 0 {
-		return report.Fail(severity.Critical, "an audio only media cannot have a content type (family)"), nil
-	}
-	return report.Pass(), nil
 }

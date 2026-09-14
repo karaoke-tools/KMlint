@@ -11,30 +11,21 @@ import (
 	"github.com/karaoke-tools/kmlint/internal/karadata"
 	"github.com/karaoke-tools/kmlint/internal/lints/lint"
 	"github.com/karaoke-tools/kmlint/internal/lints/report"
-	"github.com/karaoke-tools/kmlint/internal/lints/report/severity"
 	"github.com/karaoke-tools/kmlint/internal/lints/skip/cond"
-	"github.com/karaoke-tools/kmlint/internal/repos/system/lints/baselint"
 )
 
-type AegisubGarbage struct {
-	baselint.BaseLint
-	lint.WithDefault
-}
-
-func NewAegisubGarbage() lint.Lint {
-	return &AegisubGarbage{
-		baselint.New("aegisub-garbage",
-			"Aegisub Project Garbage section has not been removed",
-			cond.NoLyrics{},
-		),
-		baselint.EnabledByDefault{},
+func AegisubGarbage() lint.Lint {
+	return lint.Lint{
+		Name:        "aegisub-garbage",
+		Description: "Aegisub Project Garbage section has not been removed",
+		SkipCond:    cond.NoLyrics{},
+		RunFunc: func(ctx context.Context, KaraData karadata.KaraData) (report.Report, error) {
+			// TODO: update this when multi-track drifting is released
+			if KaraData.Lyrics[0].AegisubGarbage {
+				return report.FailInfo("Aegisub Project Garbage section has not been removed; " +
+					"if you are integrating this song make sure to enable the \"cleanup lyrics\" function in Karaoke Mugen "), nil
+			}
+			return report.Pass(), nil
+		},
 	}
-}
-
-func (p AegisubGarbage) Run(ctx context.Context, KaraData *karadata.KaraData) (report.Report, error) {
-	// TODO: update this when multi-track drifting is released
-	if KaraData.Lyrics[0].AegisubGarbage {
-		return report.Fail(severity.Info, "Aegisub Project Garbage section has not been removed; if you are integrating this song make sure to enable the \"cleanup lyrics\" function in Karaoke Mugen "), nil
-	}
-	return report.Pass(), nil
 }

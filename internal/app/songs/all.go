@@ -32,7 +32,7 @@ func (s *SongsSetup) RunAll(ctx context.Context) error {
 		default:
 			wgRepos.Go(func() {
 				repo.WalkSongs(ctx,
-					func(ctx context.Context, r *app.Repository, p string) error {
+					func(ctx context.Context, r app.Repository, p string) error {
 
 						s.StartWork()
 						wg.Go(func() {

@@ -15,7 +15,7 @@ import (
 
 type All []skip.Condition
 
-func (a All) Result(ctx context.Context, k *karadata.KaraData) (bool, string, error) {
+func (a All) Result(ctx context.Context, k karadata.KaraData) (bool, string, error) {
 	msgs := []string{}
 	for _, c := range a {
 		if ok, msg, err := c.Result(ctx, k); err != nil {

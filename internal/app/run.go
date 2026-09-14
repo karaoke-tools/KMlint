@@ -19,7 +19,7 @@ import (
 
 // Parse the song, run lints, and display result
 // p is the filepath to the .kara.json file
-func RunOnFile(ctx context.Context, repo *Repository, p string, pr printer.Printer) error {
+func RunOnFile(ctx context.Context, repo Repository, p string, pr printer.Printer) error {
 	karaJson, err := karajson.FromFile(ctx, p)
 	if err != nil {
 		select {

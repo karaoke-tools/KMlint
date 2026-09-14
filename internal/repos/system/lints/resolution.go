@@ -11,30 +11,20 @@ import (
 	"github.com/karaoke-tools/kmlint/internal/karadata"
 	"github.com/karaoke-tools/kmlint/internal/lints/lint"
 	"github.com/karaoke-tools/kmlint/internal/lints/report"
-	"github.com/karaoke-tools/kmlint/internal/lints/report/severity"
 	"github.com/karaoke-tools/kmlint/internal/lints/skip/cond"
-	"github.com/karaoke-tools/kmlint/internal/repos/system/lints/baselint"
 )
 
-type Resolution struct {
-	baselint.BaseLint
-	lint.WithDefault
-}
-
-func NewResolution() lint.Lint {
-	return &Resolution{
-		baselint.New("resolution",
-			"resolution not set to 0×0",
-			cond.NoLyrics{},
-		),
-		baselint.EnabledByDefault{},
+func Resolution() lint.Lint {
+	return lint.Lint{
+		Name:        "resolution",
+		Description: "resolution not set to 0×0",
+		SkipCond:    cond.NoLyrics{},
+		RunFunc: func(ctx context.Context, KaraData karadata.KaraData) (report.Report, error) {
+			// TODO: update this when multi-track drifting is released
+			if KaraData.Lyrics[0].ScriptInfo.PlayResX == 0 && KaraData.Lyrics[0].ScriptInfo.PlayResY == 0 {
+				return report.Pass(), nil
+			}
+			return report.FailCritical("update resolution to be 0×0 (and check style size)"), nil
+		},
 	}
-}
-
-func (p Resolution) Run(ctx context.Context, KaraData *karadata.KaraData) (report.Report, error) {
-	// TODO: update this when multi-track drifting is released
-	if KaraData.Lyrics[0].ScriptInfo.PlayResX == 0 && KaraData.Lyrics[0].ScriptInfo.PlayResY == 0 {
-		return report.Pass(), nil
-	}
-	return report.Fail(severity.Critical, "update resolution to be 0×0 (and check style size)"), nil
 }

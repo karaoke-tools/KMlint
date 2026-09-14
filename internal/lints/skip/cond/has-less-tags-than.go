@@ -18,7 +18,7 @@ type HasLessTagsThan struct {
 	Msg     string
 }
 
-func (h HasLessTagsThan) Result(ctx context.Context, k *karadata.KaraData) (bool, string, error) {
+func (h HasLessTagsThan) Result(ctx context.Context, k karadata.KaraData) (bool, string, error) {
 	if len(k.KaraJson.Tag(h.TagType)) < h.Number {
 		return true, h.Msg, nil
 	}

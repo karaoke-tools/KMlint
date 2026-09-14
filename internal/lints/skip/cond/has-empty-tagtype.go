@@ -17,7 +17,7 @@ type HasEmptyTagtype struct {
 	Msg     string
 }
 
-func (h HasEmptyTagtype) Result(ctx context.Context, k *karadata.KaraData) (bool, string, error) {
+func (h HasEmptyTagtype) Result(ctx context.Context, k karadata.KaraData) (bool, string, error) {
 	if k.KaraJson.HasEmptyTagtype(h.TagType) {
 		return true, h.Msg, nil
 	}

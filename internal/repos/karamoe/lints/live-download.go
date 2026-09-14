@@ -13,28 +13,10 @@ import (
 	"github.com/karaoke-tools/kmlint/internal/karajson"
 	"github.com/karaoke-tools/kmlint/internal/lints/lint"
 	"github.com/karaoke-tools/kmlint/internal/lints/report"
-	"github.com/karaoke-tools/kmlint/internal/lints/report/severity"
 	"github.com/karaoke-tools/kmlint/internal/lints/skip/cond"
-	"github.com/karaoke-tools/kmlint/internal/repos/karamoe/lints/baselint"
 	"github.com/karaoke-tools/kmlint/internal/repos/karamoe/tags/collection"
 	"github.com/karaoke-tools/kmlint/internal/repos/karamoe/tags/misc"
 )
-
-type LiveDownload struct {
-	baselint.BaseLint
-	lint.WithDefault
-}
-
-func NewLiveDownload() lint.Lint {
-	return &LiveDownload{
-		baselint.New(
-			"live-download",
-			"is hardsub available?",
-			cond.Never{},
-		),
-		baselint.EnabledByDefault{},
-	}
-}
 
 // State of "no live download" collections as of 2025-01-06
 var collectionsNoLiveDownload = []karajson.Tid{
@@ -47,14 +29,22 @@ func isNoLiveDownloadCollection(collection karajson.Tid) bool {
 	return slices.Contains(collectionsNoLiveDownload, collection)
 }
 
-// Checking each tag may be long when probing the full repository.
-// This function only check for hardcoded collections and "unavailable" tag.
-func (p LiveDownload) Run(ctx context.Context, KaraData *karadata.KaraData) (report.Report, error) {
-	if slices.Contains(KaraData.KaraJson.Data.Tags.Misc, misc.Unavailable) {
-		return report.Fail(severity.Info, "not available for live download"), nil
+// LiveDownload only check for hardcoded collections and "unavailable" tag
+// because checking each tag may be long when probing the full repository.
+func LiveDownload() lint.Lint {
+	return lint.Lint{
+		Pkg:         PKG_NAME,
+		Name:        "live-download",
+		Description: "is hardsub available?",
+		SkipCond:    cond.Never{},
+		RunFunc: func(ctx context.Context, KaraData karadata.KaraData) (report.Report, error) {
+			if slices.Contains(KaraData.KaraJson.Data.Tags.Misc, misc.Unavailable) {
+				return report.FailInfo("not available for live download"), nil
+			}
+			if slices.ContainsFunc(KaraData.KaraJson.Data.Tags.Collections, isNoLiveDownloadCollection) {
+				return report.FailInfo("not available for live download"), nil
+			}
+			return report.Pass(), nil
+		},
 	}
-	if slices.ContainsFunc(KaraData.KaraJson.Data.Tags.Collections, isNoLiveDownloadCollection) {
-		return report.Fail(severity.Info, "not available for live download"), nil
-	}
-	return report.Pass(), nil
 }

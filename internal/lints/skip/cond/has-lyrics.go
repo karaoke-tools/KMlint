@@ -13,7 +13,7 @@ import (
 
 type HasLyrics struct{}
 
-func (n HasLyrics) Result(ctx context.Context, k *karadata.KaraData) (bool, string, error) {
+func (n HasLyrics) Result(ctx context.Context, k karadata.KaraData) (bool, string, error) {
 	if len(k.Lyrics) > 0 {
 		return true, "has lyrics", nil
 	}

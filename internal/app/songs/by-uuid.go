@@ -57,7 +57,7 @@ func (s *SongsSetup) RunByUuid(ctx context.Context) error {
 				wg.Go(func() {
 					defer s.StopWork()
 					fp := filepath.Join(repo.BaseDir, "karaokes", u.String()+".kara.json")
-					err := app.RunOnFile(ctx, &repo, fp, pr)
+					err := app.RunOnFile(ctx, repo, fp, pr)
 					if err == nil || !errors.Is(err, fs.ErrNotExist) {
 						nbFound[i].Add(1)
 					}

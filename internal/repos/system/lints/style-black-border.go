@@ -14,44 +14,36 @@ import (
 	"github.com/karaoke-tools/kmlint/internal/karadata"
 	"github.com/karaoke-tools/kmlint/internal/lints/lint"
 	"github.com/karaoke-tools/kmlint/internal/lints/report"
-	"github.com/karaoke-tools/kmlint/internal/lints/report/severity"
 	"github.com/karaoke-tools/kmlint/internal/lints/skip/cond"
-	"github.com/karaoke-tools/kmlint/internal/repos/system/lints/baselint"
 )
 
-type StyleBlackBorder struct {
-	baselint.BaseLint
-	lint.WithDefault
-}
-
-func NewStyleBlackBorder() lint.Lint {
-	return &StyleBlackBorder{
-		baselint.New("style-black-border",
-			"detects non-black border",
-			cond.NoLyrics{},
-		),
-		baselint.EnabledByDefault{},
-	}
-}
-
-func (p StyleBlackBorder) Run(ctx context.Context, KaraData *karadata.KaraData) (report.Report, error) {
-	// TODO: update this when multi-track drifting is released
-	for _, line := range KaraData.Lyrics[0].Styles {
-		select {
-		case <-ctx.Done():
-			return report.Abort(), ctx.Err()
-		default:
-			if strings.HasPrefix(line, "Style: ") && !strings.Contains(line, "-furigana") { // we don't care about furigana styles for the now
-				s, err := style.Parse(strings.TrimPrefix(line, "Style: "))
-				if err != nil {
-					return report.Abort(), err
-				}
-				if s.OutlineColour != colour.Black {
-					// border color must be black
-					return report.Fail(severity.Warning, "outline must be black (this lint can only check if this is pure black, nuances of black might be okay"), nil
+func StyleBlackBorder() lint.Lint {
+	return lint.Lint{
+		Name:        "style-black-border",
+		Description: "detects non-black border",
+		SkipCond:    cond.NoLyrics{},
+		RunFunc: func(ctx context.Context, KaraData karadata.KaraData) (report.Report, error) {
+			// TODO: update this when multi-track drifting is released
+			for _, line := range KaraData.Lyrics[0].Styles {
+				select {
+				case <-ctx.Done():
+					return report.Abort(), ctx.Err()
+				default:
+					if strings.HasPrefix(line, "Style: ") && !strings.Contains(line, "-furigana") {
+						// we don't care about furigana styles for the now
+						s, err := style.Parse(strings.TrimPrefix(line, "Style: "))
+						if err != nil {
+							return report.Abort(), err
+						}
+						if s.OutlineColour != colour.Black {
+							// border color must be black
+							return report.FailWarning("outline must be black " +
+								"(this lint can only check if this is pure black, nuances of black might be okay"), nil
+						}
+					}
 				}
 			}
-		}
+			return report.Pass(), nil
+		},
 	}
-	return report.Pass(), nil
 }

@@ -12,30 +12,20 @@ import (
 	"github.com/karaoke-tools/kmlint/internal/karajson/tag"
 	"github.com/karaoke-tools/kmlint/internal/lints/lint"
 	"github.com/karaoke-tools/kmlint/internal/lints/report"
-	"github.com/karaoke-tools/kmlint/internal/lints/report/severity"
 	"github.com/karaoke-tools/kmlint/internal/lints/skip/cond"
-	"github.com/karaoke-tools/kmlint/internal/repos/system/lints/baselint"
 )
 
-type TooManyLangTags struct {
-	baselint.BaseLint
-	lint.WithDefault
-}
-
-func NewTooManyLangTags() lint.Lint {
-	return &TooManyLangTags{
-		baselint.New("too-many-lang-tags",
-			"if more than 2 langs tags, replace them with multilingual tag",
-			cond.HasLessTagsThan{
-				TagType: tag.Langs,
-				Number:  3,
-				Msg:     "has not more than 2 lang tags",
-			},
-		),
-		baselint.EnabledByDefault{},
+func TooManyLangTags() lint.Lint {
+	return lint.Lint{
+		Name:        "too-many-lang-tags",
+		Description: "if more than 2 langs tags, replace them with multilingual tag",
+		SkipCond: cond.HasLessTagsThan{
+			TagType: tag.Langs,
+			Number:  3,
+			Msg:     "has not more than 2 lang tags",
+		},
+		RunFunc: func(ctx context.Context, karaData karadata.KaraData) (report.Report, error) {
+			return report.FailCritical("replace lang tags with \"multilingual\""), nil
+		},
 	}
-}
-
-func (p TooManyLangTags) Run(ctx context.Context, karaData *karadata.KaraData) (report.Report, error) {
-	return report.Fail(severity.Critical, "replace lang tags with \"multilingual\""), nil
 }

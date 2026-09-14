@@ -41,16 +41,13 @@ func NewAggregator() *Aggregator {
 	}
 }
 
-func (a *Aggregator) Reset(basedir string, karaJson *karajson.KaraJson) {
+func (a *Aggregator) Reset(basedir string, karaJson karajson.KaraJson) {
 	// recycle reports & analysis memory
 	for _, v := range a.Reports {
 		v.Delete()
 	}
 	// empty the map
 	clear(a.Reports)
-	if karaJson == nil {
-		return
-	}
 	a.Repository = karaJson.Data.Repository
 	a.Songname = karaJson.Data.Songname
 	a.Kid = karaJson.Data.Kid
@@ -65,7 +62,7 @@ type reportWithName struct {
 	r    report.Report
 }
 
-func (a *Aggregator) Run(ctx context.Context, KaraData *karadata.KaraData) error {
+func (a *Aggregator) Run(ctx context.Context, KaraData karadata.KaraData) error {
 	select {
 	// if a.Lints is empty, context would not be checked otherwise
 	case <-ctx.Done():
@@ -73,44 +70,20 @@ func (a *Aggregator) Run(ctx context.Context, KaraData *karadata.KaraData) error
 	default:
 		ch := make(chan reportWithName)
 		// start lints
-		for _, p := range a.Lints {
+		for _, l := range a.Lints {
 			select {
 			case <-ctx.Done():
 				return ctx.Err()
 			default:
-				go func(ctx context.Context, p lint.Lint, ch chan<- reportWithName) {
-					if s, msg, err := p.PreRun(ctx, KaraData); err != nil {
-						select {
-						case <-ctx.Done():
-							return
-						case ch <- reportWithName{name: p.Name(), r: report.Abort()}:
-							return
-						}
-					} else if s {
-						select {
-						case <-ctx.Done():
-							return
-						case ch <- reportWithName{name: p.Name(), r: report.Skip(msg)}:
-							return
-						}
+				go func(ctx context.Context, l lint.Lint, ch chan<- reportWithName) error {
+					r, err := l.Run(ctx, KaraData)
+					select {
+					case <-ctx.Done():
+						return ctx.Err()
+					case ch <- reportWithName{name: l.String(), r: r}:
+						return err
 					}
-					if r, err := p.Run(ctx, KaraData); err == nil {
-						select {
-						case <-ctx.Done():
-							return
-						case ch <- reportWithName{name: p.Name(), r: r}:
-							return
-						}
-					} else {
-						select {
-						case <-ctx.Done():
-							return
-						case ch <- reportWithName{name: p.Name(), r: report.Abort()}:
-							return
-
-						}
-					}
-				}(ctx, p, ch)
+				}(ctx, l, ch)
 			}
 		}
 		// get result of lints

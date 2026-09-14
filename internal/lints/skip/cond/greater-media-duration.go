@@ -16,7 +16,7 @@ type GreaterMediaDuration struct {
 	Duration int
 }
 
-func (g GreaterMediaDuration) Result(ctx context.Context, k *karadata.KaraData) (bool, string, error) {
+func (g GreaterMediaDuration) Result(ctx context.Context, k karadata.KaraData) (bool, string, error) {
 	if k.KaraJson.Medias[0].Duration > 300 {
 		return true, fmt.Sprintf("media duration over %d seconds", g.Duration), nil
 	}

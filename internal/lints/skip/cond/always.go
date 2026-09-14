@@ -13,6 +13,6 @@ import (
 
 type Always struct{}
 
-func (n Always) Result(ctx context.Context, k *karadata.KaraData) (bool, string, error) {
+func (n Always) Result(ctx context.Context, k karadata.KaraData) (bool, string, error) {
 	return true, "always skipped", nil
 }

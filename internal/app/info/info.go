@@ -113,7 +113,7 @@ func (l ListLints) RunTxt(ctx context.Context) error {
 	header := prb{Name: "Name", Desc: "Description", EnabledString: "Status"}
 	namelen, enabledlen := len(header.Name), len(header.EnabledString)
 	for _, pf := range lints.Available() {
-		item := prb{Name: pf.Name(), Desc: pf.Description(), Enabled: pf.Enabled(), EnabledString: enabledString(pf.Enabled())}
+		item := prb{Name: pf.String(), Desc: pf.Description, Enabled: pf.Enabled(), EnabledString: enabledString(pf.Enabled())}
 		list = append(list, item)
 		if len(item.Name) > namelen {
 			namelen = len(item.Name)
@@ -124,6 +124,9 @@ func (l ListLints) RunTxt(ctx context.Context) error {
 	}
 	b := strings.Builder{}
 	if err := header.Write(os.Stdout, namelen, enabledlen, &b, l.Color, noColor); err != nil {
+		return err
+	}
+	if _, err := os.Stdout.WriteString("\n"); err != nil {
 		return err
 	}
 
@@ -139,6 +142,9 @@ func (l ListLints) RunTxt(ctx context.Context) error {
 		if err := item.Write(os.Stdout, namelen, enabledlen, &b, false, c); err != nil {
 			return err
 		}
+		if _, err := os.Stdout.WriteString("\n"); err != nil {
+			return err
+		}
 
 	}
 	return nil
@@ -147,7 +153,7 @@ func (l ListLints) RunTxt(ctx context.Context) error {
 func (l ListLints) RunJson(ctx context.Context) error {
 	for _, pf := range lints.Available() {
 		if err := json.MarshalWrite(os.Stdout,
-			prb{Name: pf.Name(), Desc: pf.Description(), Enabled: pf.Enabled()},
+			prb{Name: pf.String(), Desc: pf.Description, Enabled: pf.Enabled()},
 			jsontext.WithIndent("  ")); err != nil {
 			return err
 		}

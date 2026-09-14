@@ -12,19 +12,19 @@ import (
 	"time"
 )
 
-func FromFile(ctx context.Context, path string) (*KaraJson, error) {
+func FromFile(ctx context.Context, path string) (KaraJson, error) {
 	select {
 	case <-ctx.Done():
-		return nil, ctx.Err()
+		return KaraJson{}, ctx.Err()
 	default:
 	}
 	content, err := os.ReadFile(path)
 	if err != nil {
-		return nil, err
+		return KaraJson{}, err
 	}
-	kara := new(KaraJson)
-	if err := json.Unmarshal(content, kara); err != nil {
-		return nil, err
+	var kara KaraJson
+	if err := json.Unmarshal(content, &kara); err != nil {
+		return KaraJson{}, err
 	}
 	return kara, nil
 }

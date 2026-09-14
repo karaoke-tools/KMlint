@@ -13,30 +13,20 @@ import (
 	"github.com/karaoke-tools/kmlint/internal/karajson/tag"
 	"github.com/karaoke-tools/kmlint/internal/lints/lint"
 	"github.com/karaoke-tools/kmlint/internal/lints/report"
-	"github.com/karaoke-tools/kmlint/internal/lints/report/severity"
 	"github.com/karaoke-tools/kmlint/internal/lints/skip/cond"
-	"github.com/karaoke-tools/kmlint/internal/repos/system/lints/baselint"
 	"github.com/karaoke-tools/kmlint/internal/repos/system/tags/language"
 )
 
-type NoLyrics struct {
-	baselint.BaseLint
-	lint.WithDefault
-}
-
-func NewNoLyrics() lint.Lint {
-	return &NoLyrics{
-		baselint.New("no-lyrics",
-			"missing lyrics file",
-			cond.HasLyrics{},
-		),
-		baselint.EnabledByDefault{},
+func NoLyrics() lint.Lint {
+	return lint.Lint{
+		Name:        "no-lyrics",
+		Description: "missing lyrics file",
+		SkipCond:    cond.HasLyrics{},
+		RunFunc: func(ctx context.Context, KaraData karadata.KaraData) (report.Report, error) {
+			if res := KaraData.KaraJson.HasAnyTagFrom(tag.Langs, []karajson.Tid{language.ZXX}); !res {
+				return report.FailCritical("no lyrics file, but the media is supposed to have has linguistic content"), nil
+			}
+			return report.Pass(), nil // no linguistical content
+		},
 	}
-}
-
-func (p NoLyrics) Run(ctx context.Context, KaraData *karadata.KaraData) (report.Report, error) {
-	if res := KaraData.KaraJson.HasAnyTagFrom(tag.Langs, []karajson.Tid{language.ZXX}); !res {
-		return report.Fail(severity.Critical, "no lyrics file, but the media is supposed to have has linguistic content"), nil
-	}
-	return report.Pass(), nil // no linguistical content
 }

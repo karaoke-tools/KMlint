@@ -14,7 +14,7 @@ import (
 
 type Any []skip.Condition
 
-func (a Any) Result(ctx context.Context, k *karadata.KaraData) (bool, string, error) {
+func (a Any) Result(ctx context.Context, k karadata.KaraData) (bool, string, error) {
 	for _, c := range a {
 		if ok, msg, err := c.Result(ctx, k); err != nil {
 			return true, "", err

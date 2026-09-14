@@ -19,7 +19,7 @@ type HasTagsNotFrom struct {
 	Msg     string
 }
 
-func (h HasTagsNotFrom) Result(ctx context.Context, k *karadata.KaraData) (bool, string, error) {
+func (h HasTagsNotFrom) Result(ctx context.Context, k karadata.KaraData) (bool, string, error) {
 	if b, err := k.KaraJson.HasOnlyTagsFrom(ctx, h.TagType, h.Tags); err != nil {
 		return true, "", err
 	} else if !b {
