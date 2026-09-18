@@ -22,19 +22,17 @@ type Repository struct {
 func (repo Repository) WalkSongs(ctx context.Context, f func(ctx context.Context, repo Repository, p string) error) error {
 	return filepath.WalkDir(filepath.Join(repo.BaseDir, "karaokes"), func(p string, d fs.DirEntry, err error) error {
 		// check file metadata
-		select {
-		case <-ctx.Done():
+		if ctx.Err() != nil {
 			return filepath.SkipDir
-		default:
-			if d.IsDir() {
-				if p == filepath.Join(repo.BaseDir, "karaokes") {
-					return nil
-				}
-				return filepath.SkipDir
-			}
-			if !strings.HasSuffix(d.Name(), ".kara.json") {
+		}
+		if d.IsDir() {
+			if p == filepath.Join(repo.BaseDir, "karaokes") {
 				return nil
 			}
+			return filepath.SkipDir
+		}
+		if !strings.HasSuffix(d.Name(), ".kara.json") {
+			return nil
 		}
 		return f(ctx, repo, p)
 	})

@@ -61,32 +61,26 @@ func DoubleConsonant() lint.Lint {
 		RunFunc: func(ctx context.Context, KaraData karadata.KaraData) (report.Report, error) {
 			// TODO: update this when multi-track drifting is released
 			for _, line := range KaraData.Lyrics[0].Events {
-				select {
-				case <-ctx.Done():
-					return report.Abort(), ctx.Err()
-				default:
-					if (line.Type != lyrics.Format) && (!(line.Type == lyrics.Comment && strings.HasPrefix(line.Effect, "template"))) {
-						save := " " // must end with a space to consider the first word of the line as a new word
-						for _, syll := range line.Text.TagsSplit {
-							select {
-							case <-ctx.Done():
-								return report.Abort(), ctx.Err()
-							default:
-								if !strings.HasPrefix(syll, "{") {
-									if !strings.HasSuffix(save, " ") { // this is not a new word
-										for _, double := range doubleConsonants {
-											if strings.HasPrefix(syll, double) {
-												return report.FailCritical("check for double consonants: " +
-													"there is at least an uncorrectly splitted `" +
-													strings.TrimSpace(syll) + "`"), nil
-											}
-										}
-
+				if err := ctx.Err(); err != nil {
+					return report.Abort(), err
+				}
+				if (line.Type != lyrics.Format) && (!(line.Type == lyrics.Comment && strings.HasPrefix(line.Effect, "template"))) {
+					save := " " // must end with a space to consider the first word of the line as a new word
+					for _, syll := range line.Text.TagsSplit {
+						if err := ctx.Err(); err != nil {
+							return report.Abort(), err
+						}
+						if !strings.HasPrefix(syll, "{") {
+							if !strings.HasSuffix(save, " ") { // this is not a new word
+								for _, double := range doubleConsonants {
+									if strings.HasPrefix(syll, double) {
+										return report.FailCritical("check for double consonants: " +
+											"there is at least an uncorrectly splitted `" +
+											strings.TrimSpace(syll) + "`"), nil
 									}
-									save = syll
 								}
 							}
-
+							save = syll
 						}
 					}
 				}

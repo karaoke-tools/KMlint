@@ -48,21 +48,19 @@ func (s *SongsSetup) RunByUuid(ctx context.Context) error {
 	}()
 
 	for i, u := range s.Uuids {
-		select {
-		case <-ctx.Done():
-			return ctx.Err()
-		default:
-			for _, repo := range s.Repositories {
-				s.StartWork()
-				wg.Go(func() {
-					defer s.StopWork()
-					fp := filepath.Join(repo.BaseDir, "karaokes", u.String()+".kara.json")
-					err := app.RunOnFile(ctx, repo, fp, pr)
-					if err == nil || !errors.Is(err, fs.ErrNotExist) {
-						nbFound[i].Add(1)
-					}
-				})
-			}
+		if err := ctx.Err(); err != nil {
+			return err
+		}
+		for _, repo := range s.Repositories {
+			s.StartWork()
+			wg.Go(func() {
+				defer s.StopWork()
+				fp := filepath.Join(repo.BaseDir, "karaokes", u.String()+".kara.json")
+				err := app.RunOnFile(ctx, repo, fp, pr)
+				if err == nil || !errors.Is(err, fs.ErrNotExist) {
+					nbFound[i].Add(1)
+				}
+			})
 		}
 	}
 	return nil

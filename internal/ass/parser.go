@@ -44,86 +44,84 @@ func (ass *Ass) Parse(ctx context.Context) error {
 	state := assInit
 	i := 0
 	for scanner.Scan() {
-		select {
-		case <-ctx.Done():
-			return ctx.Err()
-		default:
-			i++
-			line := scanner.Text()
-			if i == 1 {
-				// In some files, BOM is present multiple times for no reason
-				BOM := string([]byte{0xEF, 0xBB, 0xBF})
-				for strings.HasPrefix(line, BOM) {
-					line = strings.TrimPrefix(line, BOM)
-				}
+		if err := ctx.Err(); err != nil {
+			return err
+		}
+		i++
+		line := scanner.Text()
+		if i == 1 {
+			// In some files, BOM is present multiple times for no reason
+			BOM := string([]byte{0xEF, 0xBB, 0xBF})
+			for strings.HasPrefix(line, BOM) {
+				line = strings.TrimPrefix(line, BOM)
 			}
-			if strings.HasPrefix(line, "[") && strings.HasSuffix(line, "]") {
-				switch strings.TrimSuffix(strings.TrimPrefix(line, "["), "]") {
-				case "Script Info":
-					state = assScriptInfo
-				case "Aegisub Project Garbage":
-					state = assAegisubGarbage
-					ass.AegisubGarbage = true
-				case "V4+ Styles":
-					state = assStyles
-				case "Fonts":
-					state = assFonts
-					ass.Fonts = true
-				case "Events":
-					state = assEvents
-				case "Aegisub Extradata":
-					state = assAegisubExtradata
-				default:
-					state = assUnknownSection
-					ass.assUnknownSectionsCount += 1
-				}
+		}
+		if strings.HasPrefix(line, "[") && strings.HasSuffix(line, "]") {
+			switch strings.TrimSuffix(strings.TrimPrefix(line, "["), "]") {
+			case "Script Info":
+				state = assScriptInfo
+			case "Aegisub Project Garbage":
+				state = assAegisubGarbage
+				ass.AegisubGarbage = true
+			case "V4+ Styles":
+				state = assStyles
+			case "Fonts":
+				state = assFonts
+				ass.Fonts = true
+			case "Events":
+				state = assEvents
+			case "Aegisub Extradata":
+				state = assAegisubExtradata
+			default:
+				state = assUnknownSection
+				ass.assUnknownSectionsCount += 1
+			}
+			continue
+		}
+		if line == "" {
+			// empty line
+			continue
+		}
+		switch state {
+		case assScriptInfo:
+			if strings.HasPrefix(line, ";") {
+				// comment line
 				continue
 			}
-			if line == "" {
-				// empty line
+			lineSplit := strings.SplitN(line, ": ", 2)
+			if len(lineSplit) != 2 {
+				// unreadable
 				continue
 			}
-			switch state {
-			case assScriptInfo:
-				if strings.HasPrefix(line, ";") {
-					// comment line
-					continue
-				}
-				lineSplit := strings.SplitN(line, ": ", 2)
-				if len(lineSplit) != 2 {
-					// unreadable
-					continue
-				}
-				switch lineSplit[0] {
-				case "PlayResX":
-					res, err := strconv.ParseUint(lineSplit[1], 10, 32)
-					if err != nil {
-						return ErrMalformedFile
-					}
-					ass.ScriptInfo.PlayResX = uint32(res)
-				case "PlayResY":
-					res, err := strconv.ParseUint(lineSplit[1], 10, 32)
-					if err != nil {
-						return ErrMalformedFile
-					}
-					ass.ScriptInfo.PlayResY = uint32(res)
-				case "ScaledBorderAndShadow":
-					if err := ass.ScriptInfo.SetScaledBorderAndShadow(lineSplit[1]); err != nil {
-						return err
-					}
-				}
-			case assStyles:
-				ass.Styles = append(ass.Styles, line)
-			case assEvents:
-				lyr, err := lyrics.Parse(line)
+			switch lineSplit[0] {
+			case "PlayResX":
+				res, err := strconv.ParseUint(lineSplit[1], 10, 32)
 				if err != nil {
+					return ErrMalformedFile
+				}
+				ass.ScriptInfo.PlayResX = uint32(res)
+			case "PlayResY":
+				res, err := strconv.ParseUint(lineSplit[1], 10, 32)
+				if err != nil {
+					return ErrMalformedFile
+				}
+				ass.ScriptInfo.PlayResY = uint32(res)
+			case "ScaledBorderAndShadow":
+				if err := ass.ScriptInfo.SetScaledBorderAndShadow(lineSplit[1]); err != nil {
 					return err
 				}
-				ass.Events = append(ass.Events, lyr)
-			case assAegisubExtradata:
-				ass.Extradata = append(ass.Extradata, line)
-			default:
 			}
+		case assStyles:
+			ass.Styles = append(ass.Styles, line)
+		case assEvents:
+			lyr, err := lyrics.Parse(line)
+			if err != nil {
+				return err
+			}
+			ass.Events = append(ass.Events, lyr)
+		case assAegisubExtradata:
+			ass.Extradata = append(ass.Extradata, line)
+		default:
 		}
 	}
 	if err := scanner.Err(); err != nil {

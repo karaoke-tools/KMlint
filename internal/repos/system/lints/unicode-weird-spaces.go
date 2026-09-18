@@ -26,18 +26,16 @@ func UnicodeWeirdSpaces() lint.Lint {
 		RunFunc: func(ctx context.Context, KaraData karadata.KaraData) (report.Report, error) {
 			// TODO: update this when multi-track drifting is released
 			for _, line := range KaraData.Lyrics[0].Events {
-				select {
-				case <-ctx.Done():
-					return report.Abort(), ctx.Err()
-				default:
-					if (line.Type != lyrics.Format) && !((line.Type == lyrics.Comment) && (line.Effect != "karaoke")) {
-						l := line.Text.StripTags()
-						if strings.ContainsRune(l, '\u2005') { // FOUR-PER-EM SPACE
-							return report.FailWarning("Found `Four-Per-Em Space` (U+2005): replace it with regular space " +
-									"(they may not render correcly on all systems)",
-								),
-								nil
-						}
+				if err := ctx.Err(); err != nil {
+					return report.Abort(), err
+				}
+				if (line.Type != lyrics.Format) && !((line.Type == lyrics.Comment) && (line.Effect != "karaoke")) {
+					l := line.Text.StripTags()
+					if strings.ContainsRune(l, '\u2005') { // FOUR-PER-EM SPACE
+						return report.FailWarning("Found `Four-Per-Em Space` (U+2005): replace it with regular space " +
+								"(they may not render correcly on all systems)",
+							),
+							nil
 					}
 				}
 			}

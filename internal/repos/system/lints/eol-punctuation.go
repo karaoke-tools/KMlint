@@ -26,11 +26,26 @@ func EolPunctuation() lint.Lint {
 			hasKaraokeEffectLines := false
 			// We need to check on karaoke comment lines, because the karaoke template may create a line per word (karaokes with furigana).
 			for _, line := range KaraData.Lyrics[0].Events {
-				select {
-				case <-ctx.Done():
-					return report.Abort(), ctx.Err()
-				default:
-					if (line.Type != lyrics.Format) && (line.Type == lyrics.Comment) && (line.Effect == "karaoke") {
+				if err := ctx.Err(); err != nil {
+					return report.Abort(), err
+				}
+				if (line.Type != lyrics.Format) && (line.Type == lyrics.Comment) && (line.Effect == "karaoke") {
+					hasKaraokeEffectLines = true
+					l := line.Text.StripTags()
+					if strings.HasSuffix(l, ".") || strings.HasSuffix(l, ",") {
+						if strings.HasSuffix(l, "...") {
+							continue
+						}
+						return report.FailCritical("remove useless punctuation (`.` or `,`) at end of line"), nil
+					}
+				}
+			}
+			if !hasKaraokeEffectLines { // fallback, for old karaokes
+				for _, line := range KaraData.Lyrics[0].Events {
+					if err := ctx.Err(); err != nil {
+						return report.Abort(), err
+					}
+					if (line.Type != lyrics.Format) && (line.Type != lyrics.Comment) {
 						hasKaraokeEffectLines = true
 						l := line.Text.StripTags()
 						if strings.HasSuffix(l, ".") || strings.HasSuffix(l, ",") {
@@ -38,25 +53,6 @@ func EolPunctuation() lint.Lint {
 								continue
 							}
 							return report.FailCritical("remove useless punctuation (`.` or `,`) at end of line"), nil
-						}
-					}
-				}
-			}
-			if !hasKaraokeEffectLines { // fallback, for old karaokes
-				for _, line := range KaraData.Lyrics[0].Events {
-					select {
-					case <-ctx.Done():
-						return report.Abort(), ctx.Err()
-					default:
-						if (line.Type != lyrics.Format) && (line.Type != lyrics.Comment) {
-							hasKaraokeEffectLines = true
-							l := line.Text.StripTags()
-							if strings.HasSuffix(l, ".") || strings.HasSuffix(l, ",") {
-								if strings.HasSuffix(l, "...") {
-									continue
-								}
-								return report.FailCritical("remove useless punctuation (`.` or `,`) at end of line"), nil
-							}
 						}
 					}
 				}

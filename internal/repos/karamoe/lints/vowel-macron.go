@@ -41,16 +41,14 @@ func VowelMacron() lint.Lint {
 		RunFunc: func(ctx context.Context, KaraData karadata.KaraData) (report.Report, error) {
 			// TODO: update this when multi-track drifting is released
 			for _, line := range KaraData.Lyrics[0].Events {
-				select {
-				case <-ctx.Done():
+				if err := ctx.Err(); err != nil {
 					return report.Abort(), ctx.Err()
-				default:
-					if (line.Type != lyrics.Format) && (!strings.HasPrefix(line.Effect, "template")) {
-						if strings.ContainsAny(line.Text.StripTags(), "āīūēō") {
-							return report.FailWarning("in full japanese song, vowels should not have macron: " +
-								"use the appropriate expansion from: aa/ii/uu/ee/ou/oo " +
-								"(if this is on a chinese word, make sure to put it in fullcaps)"), nil
-						}
+				}
+				if (line.Type != lyrics.Format) && (!strings.HasPrefix(line.Effect, "template")) {
+					if strings.ContainsAny(line.Text.StripTags(), "āīūēō") {
+						return report.FailWarning("in full japanese song, vowels should not have macron: " +
+							"use the appropriate expansion from: aa/ii/uu/ee/ou/oo " +
+							"(if this is on a chinese word, make sure to put it in fullcaps)"), nil
 					}
 				}
 			}

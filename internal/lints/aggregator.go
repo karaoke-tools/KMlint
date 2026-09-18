@@ -63,59 +63,55 @@ type reportWithName struct {
 }
 
 func (a *Aggregator) Run(ctx context.Context, KaraData karadata.KaraData) error {
-	select {
-	// if a.Lints is empty, context would not be checked otherwise
-	case <-ctx.Done():
-		return ctx.Err()
-	default:
-		ch := make(chan reportWithName)
-		// start lints
-		for _, l := range a.Lints {
-			select {
-			case <-ctx.Done():
-				return ctx.Err()
-			default:
-				go func(ctx context.Context, l lint.Lint, ch chan<- reportWithName) error {
-					r, err := l.Run(ctx, KaraData)
-					select {
-					case <-ctx.Done():
-						return ctx.Err()
-					case ch <- reportWithName{name: l.String(), r: r}:
-						return err
-					}
-				}(ctx, l, ch)
-			}
-		}
-		// get result of lints
-		for range a.Lints {
-			select {
-			case <-ctx.Done():
-				return ctx.Err()
-			case r := <-ch:
-				a.Reports[r.name] = r.r
-				switch r.r.Status() {
-				case status.Completed:
-					switch r.r.Result() {
-					case result.Passed:
-						a.Stats.Passed += 1
-					case result.Failed:
-						switch r.r.Severity() {
-						case severity.Info:
-							a.Stats.FailedInfo += 1
-						case severity.Warning:
-							a.Stats.FailedWarning += 1
-						case severity.Critical:
-							a.Stats.FailedCritical += 1
-						}
-					}
-				case status.Aborted:
-					a.Stats.Aborted += 1
-				case status.Skipped:
-					a.Stats.Skipped += 1
-				}
-
-			}
-		}
-		return nil
+	if err := ctx.Err(); err != nil {
+		// if a.Lints is empty, context would not be checked otherwise
+		return err
 	}
+	ch := make(chan reportWithName)
+	// start lints
+	for _, l := range a.Lints {
+		if err := ctx.Err(); err != nil {
+			return err
+		}
+		go func(ctx context.Context, l lint.Lint, ch chan<- reportWithName) error {
+			r, err := l.Run(ctx, KaraData)
+			select {
+			case <-ctx.Done():
+				return ctx.Err()
+			case ch <- reportWithName{name: l.String(), r: r}:
+				return err
+			}
+		}(ctx, l, ch)
+	}
+	// get result of lints
+	for range a.Lints {
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		case r := <-ch:
+			a.Reports[r.name] = r.r
+			switch r.r.Status() {
+			case status.Completed:
+				switch r.r.Result() {
+				case result.Passed:
+					a.Stats.Passed += 1
+				case result.Failed:
+					switch r.r.Severity() {
+					case severity.Info:
+						a.Stats.FailedInfo += 1
+					case severity.Warning:
+						a.Stats.FailedWarning += 1
+					case severity.Critical:
+						a.Stats.FailedCritical += 1
+					}
+				}
+			case status.Aborted:
+				a.Stats.Aborted += 1
+			case status.Skipped:
+				a.Stats.Skipped += 1
+			}
+
+		}
+	}
+	return nil
 }

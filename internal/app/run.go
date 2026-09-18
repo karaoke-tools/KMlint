@@ -47,28 +47,22 @@ func RunOnFile(ctx context.Context, repo Repository, p string, pr printer.Printe
 	aggregator := pr.Aggregator()
 	aggregator.Reset(repo.BaseDir, karaJson)
 	if err := aggregator.Run(ctx, karaData); err != nil {
-		select {
-		case <-ctx.Done():
-			return ctx.Err()
-		default:
+		if ctx.Err() == nil {
 			logrus.WithError(err).WithFields(logrus.Fields{
 				"repository": repo.Name,
 				"filepath":   p,
 			}).Error("Lint aggregator failure")
-			return err
 		}
+		return err
 	}
 	if err := pr.Encode(ctx, aggregator); err != nil {
-		select {
-		case <-ctx.Done():
-			return ctx.Err()
-		default:
+		if ctx.Err() == nil {
 			logrus.WithError(err).WithFields(logrus.Fields{
 				"repository": repo.Name,
 				"filepath":   p,
 			}).Error("Could not print aggregator result")
-			return err
 		}
+		return err
 	}
 	return nil
 }

@@ -39,10 +39,8 @@ func SongtypeConflict() lint.Lint {
 
 			counter := 0
 			for _, tag := range KaraData.KaraJson.Data.Tags.Songtypes {
-				select {
-				case <-ctx.Done():
-					return nil, ctx.Err()
-				default:
+				if err := ctx.Err(); err != nil {
+					return report.Abort(), err
 				}
 
 				// maybe in the future we will move AUDIO into "families",

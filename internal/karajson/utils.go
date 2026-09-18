@@ -56,13 +56,11 @@ func (k *KaraJson) HasOnlyTagsFrom(ctx context.Context, t tag.Tag, ids []Tid) (b
 		return false, nil
 	}
 	for _, l := range field {
-		select {
-		case <-ctx.Done():
-			return false, ctx.Err()
-		default:
-			if !slices.Contains(ids, l) {
-				return false, nil
-			}
+		if err := ctx.Err(); err != nil {
+			return false, err
+		}
+		if !slices.Contains(ids, l) {
+			return false, nil
 		}
 	}
 	return true, nil

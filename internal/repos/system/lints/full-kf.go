@@ -35,23 +35,19 @@ func FullKf() lint.Lint {
 			k_count := 0
 			// TODO: update this when multi-track drifting is released
 			for _, line := range KaraData.Lyrics[0].Events {
-				select {
-				case <-ctx.Done():
-					return report.Abort(), ctx.Err()
-				default:
-					if (line.Type != lyrics.Format) && (!(line.Type == lyrics.Comment && strings.HasPrefix(line.Effect, "template"))) {
-						for _, syll := range line.Text.TagsSplit {
-							select {
-							case <-ctx.Done():
-								return report.Abort(), ctx.Err()
-							default:
-								if strings.HasPrefix(syll, "{") {
-									if strings.Contains(syll, "\\kf") {
-										kf_count += 1
-									} else {
-										k_count += 1
-									}
-								}
+				if err := ctx.Err(); err != nil {
+					return report.Abort(), err
+				}
+				if (line.Type != lyrics.Format) && (!(line.Type == lyrics.Comment && strings.HasPrefix(line.Effect, "template"))) {
+					for _, syll := range line.Text.TagsSplit {
+						if err := ctx.Err(); err != nil {
+							return report.Abort(), err
+						}
+						if strings.HasPrefix(syll, "{") {
+							if strings.Contains(syll, "\\kf") {
+								kf_count += 1
+							} else {
+								k_count += 1
 							}
 						}
 					}

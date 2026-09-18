@@ -43,26 +43,22 @@ func WrongTsuSeparation() lint.Lint {
 		RunFunc: func(ctx context.Context, KaraData karadata.KaraData) (report.Report, error) {
 			// TODO: update this when multi-track drifting is released
 			for _, line := range KaraData.Lyrics[0].Events {
-				select {
-				case <-ctx.Done():
-					return report.Abort(), ctx.Err()
-				default:
-					if (line.Type != lyrics.Format) && (!strings.HasPrefix(line.Effect, "template")) {
-						ok := false
-						for _, syll := range line.Text.TagsSplit {
-							select {
-							case <-ctx.Done():
-								return report.Abort(), ctx.Err()
-							default:
-								if !strings.HasPrefix(syll, "{") {
-									if strings.HasSuffix(syll, "t") {
-										ok = true
-									} else if ok && strings.HasPrefix(syll, "su") {
-										return report.FailCritical("`tsu` must be timed as a single syllable"), nil
-									} else {
-										ok = false
-									}
-								}
+				if err := ctx.Err(); err != nil {
+					return report.Abort(), err
+				}
+				if (line.Type != lyrics.Format) && (!strings.HasPrefix(line.Effect, "template")) {
+					ok := false
+					for _, syll := range line.Text.TagsSplit {
+						if err := ctx.Err(); err != nil {
+							return report.Abort(), err
+						}
+						if !strings.HasPrefix(syll, "{") {
+							if strings.HasSuffix(syll, "t") {
+								ok = true
+							} else if ok && strings.HasPrefix(syll, "su") {
+								return report.FailCritical("`tsu` must be timed as a single syllable"), nil
+							} else {
+								ok = false
 							}
 						}
 					}

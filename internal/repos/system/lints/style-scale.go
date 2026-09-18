@@ -24,18 +24,16 @@ func StyleScale() lint.Lint {
 		RunFunc: func(ctx context.Context, KaraData karadata.KaraData) (report.Report, error) {
 			// TODO: update this when multi-track drifting is released
 			for _, line := range KaraData.Lyrics[0].Styles {
-				select {
-				case <-ctx.Done():
-					return report.Abort(), ctx.Err()
-				default:
-					if strings.HasPrefix(line, "Style: ") && !strings.Contains(line, "-furigana") {
-						s, err := style.Parse(strings.TrimPrefix(line, "Style: "))
-						if err != nil {
-							return report.Abort(), err
-						}
-						if (s.ScaleX != "100") || (s.ScaleY != "100") {
-							return report.FailCritical("check scale of styles"), nil
-						}
+				if err := ctx.Err(); err != nil {
+					return report.Abort(), err
+				}
+				if strings.HasPrefix(line, "Style: ") && !strings.Contains(line, "-furigana") {
+					s, err := style.Parse(strings.TrimPrefix(line, "Style: "))
+					if err != nil {
+						return report.Abort(), err
+					}
+					if (s.ScaleX != "100") || (s.ScaleY != "100") {
+						return report.FailCritical("check scale of styles"), nil
 					}
 				}
 			}

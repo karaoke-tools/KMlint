@@ -25,21 +25,19 @@ func StyleBlackBorder() lint.Lint {
 		RunFunc: func(ctx context.Context, KaraData karadata.KaraData) (report.Report, error) {
 			// TODO: update this when multi-track drifting is released
 			for _, line := range KaraData.Lyrics[0].Styles {
-				select {
-				case <-ctx.Done():
-					return report.Abort(), ctx.Err()
-				default:
-					if strings.HasPrefix(line, "Style: ") && !strings.Contains(line, "-furigana") {
-						// we don't care about furigana styles for the now
-						s, err := style.Parse(strings.TrimPrefix(line, "Style: "))
-						if err != nil {
-							return report.Abort(), err
-						}
-						if s.OutlineColour != colour.Black {
-							// border color must be black
-							return report.FailWarning("outline must be black " +
-								"(this lint can only check if this is pure black, nuances of black might be okay"), nil
-						}
+				if err := ctx.Err(); err != nil {
+					return report.Abort(), err
+				}
+				if strings.HasPrefix(line, "Style: ") && !strings.Contains(line, "-furigana") {
+					// we don't care about furigana styles for the now
+					s, err := style.Parse(strings.TrimPrefix(line, "Style: "))
+					if err != nil {
+						return report.Abort(), err
+					}
+					if s.OutlineColour != colour.Black {
+						// border color must be black
+						return report.FailWarning("outline must be black " +
+							"(this lint can only check if this is pure black, nuances of black might be okay"), nil
 					}
 				}
 			}

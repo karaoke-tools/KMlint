@@ -26,24 +26,20 @@ func (s *SongsSetup) RunAll(ctx context.Context) error {
 	wgRepos := sync.WaitGroup{}
 	defer wgRepos.Wait()
 	for _, repo := range s.Repositories {
-		select {
-		case <-ctx.Done():
-			return ctx.Err()
-		default:
-			wgRepos.Go(func() {
-				repo.WalkSongs(ctx,
-					func(ctx context.Context, r app.Repository, p string) error {
-
-						s.StartWork()
-						wg.Go(func() {
-							defer s.StopWork()
-							app.RunOnFile(ctx, r, p, pr)
-						})
-						return nil
-					},
-				)
-			})
+		if err := ctx.Err(); err != nil {
+			return err
 		}
+		wgRepos.Go(func() {
+			repo.WalkSongs(ctx, func(ctx context.Context, r app.Repository, p string) error {
+				s.StartWork()
+				wg.Go(func() {
+					defer s.StopWork()
+					app.RunOnFile(ctx, r, p, pr)
+				})
+				return nil
+			},
+			)
+		})
 	}
 	return nil
 }

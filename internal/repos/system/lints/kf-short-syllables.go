@@ -32,46 +32,38 @@ func KfShortSyllables() lint.Lint {
 			warning := false
 			// TODO: update this when multi-track drifting is released
 			for _, line := range KaraData.Lyrics[0].Events {
-				select {
-				case <-ctx.Done():
-					return report.Abort(), ctx.Err()
-				default:
-					if (line.Type != lyrics.Format) && (line.Type == lyrics.Comment) && (line.Effect == "karaoke") {
-						hasKaraokeEffectLines = true
-						for _, l := range line.Text.KfLen() {
-							select {
-							case <-ctx.Done():
-								return report.Abort(), ctx.Err()
-							default:
-								if l < shortSyllableCriticalThreshold && l != 0 { // kf0 is the same as k0
-									return report.FailCritical("remove very short \\kf (found a `" + strconv.Itoa(l) + "`)"), nil
-								} else if l < shortSyllableWarningThreshold && l != 0 {
-									warning = true
-								}
-							}
+				if err := ctx.Err(); err != nil {
+					return report.Abort(), err
+				}
+				if (line.Type != lyrics.Format) && (line.Type == lyrics.Comment) && (line.Effect == "karaoke") {
+					hasKaraokeEffectLines = true
+					for _, l := range line.Text.KfLen() {
+						if err := ctx.Err(); err != nil {
+							return report.Abort(), err
+						}
+						if l < shortSyllableCriticalThreshold && l != 0 { // kf0 is the same as k0
+							return report.FailCritical("remove very short \\kf (found a `" + strconv.Itoa(l) + "`)"), nil
+						} else if l < shortSyllableWarningThreshold && l != 0 {
+							warning = true
 						}
 					}
 				}
 			}
 			if !hasKaraokeEffectLines { // fallback, for old karaokes
 				for _, line := range KaraData.Lyrics[0].Events {
-					select {
-					case <-ctx.Done():
-						return report.Abort(), ctx.Err()
-					default:
-						if (line.Type != lyrics.Format) && (line.Type != lyrics.Comment) {
-							hasKaraokeEffectLines = true
-							for _, l := range line.Text.KfLen() {
-								select {
-								case <-ctx.Done():
-									return report.Abort(), ctx.Err()
-								default:
-									if l < shortSyllableCriticalThreshold && l != 0 { // kf0 is the same as k0
-										return report.FailCritical("remove very short \\kf (found a `" + strconv.Itoa(l) + "`)"), nil
-									} else if l < shortSyllableWarningThreshold && l != 0 {
-										warning = true
-									}
-								}
+					if err := ctx.Err(); err != nil {
+						return report.Abort(), err
+					}
+					if (line.Type != lyrics.Format) && (line.Type != lyrics.Comment) {
+						hasKaraokeEffectLines = true
+						for _, l := range line.Text.KfLen() {
+							if err := ctx.Err(); err != nil {
+								return report.Abort(), err
+							}
+							if l < shortSyllableCriticalThreshold && l != 0 { // kf0 is the same as k0
+								return report.FailCritical("remove very short \\kf (found a `" + strconv.Itoa(l) + "`)"), nil
+							} else if l < shortSyllableWarningThreshold && l != 0 {
+								warning = true
 							}
 						}
 					}

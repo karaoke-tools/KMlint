@@ -44,17 +44,15 @@ func AutomationAppliedFurigana() lint.Lint {
 			// TODO: update this when multi-track drifting is released
 			fx := false
 			for _, line := range KaraData.Lyrics[0].Events {
-				select {
-				case <-ctx.Done():
-					return report.Abort(), ctx.Err()
-				default:
-					if line.Type == lyrics.Dialogue {
-						switch line.Effect {
-						case "fx":
-							fx = true
-						case "karaoke":
-							return report.FailCritical("automation script has not been applied"), nil
-						}
+				if err := ctx.Err(); err != nil {
+					return report.Abort(), err
+				}
+				if line.Type == lyrics.Dialogue {
+					switch line.Effect {
+					case "fx":
+						fx = true
+					case "karaoke":
+						return report.FailCritical("automation script has not been applied"), nil
 					}
 				}
 			}

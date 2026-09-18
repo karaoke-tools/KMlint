@@ -34,27 +34,25 @@ func GiantFont() lint.Lint {
 			warn := false
 			// TODO: update this when multi-track drifting is released
 			for _, line := range KaraData.Lyrics[0].Styles {
-				select {
-				case <-ctx.Done():
-					return report.Abort(), ctx.Err()
-				default:
-					if after, ok := strings.CutPrefix(line, "Style: "); ok {
-						s, err := style.Parse(after)
-						if err != nil {
-							return report.Abort(), err
-						}
-						if strings.Contains(strings.ToLower(s.Name), "symbol") {
-							// style used by some multi-singer karaoke to make symbols bigger
-							continue
-						}
-						if s.Fontsize >= GIANT_FONT_SIZE_CRITICAL {
-							return report.FailCritical("found a style with a big fontsize: " +
-								"consider reducing font size " +
-								"(it may be hard to identify big text as lyrics to actually sing)"), nil
-						}
-						if s.Fontsize >= GIANT_FONT_SIZE_WARNING {
-							warn = true
-						}
+				if err := ctx.Err(); err != nil {
+					return report.Abort(), err
+				}
+				if after, ok := strings.CutPrefix(line, "Style: "); ok {
+					s, err := style.Parse(after)
+					if err != nil {
+						return report.Abort(), err
+					}
+					if strings.Contains(strings.ToLower(s.Name), "symbol") {
+						// style used by some multi-singer karaoke to make symbols bigger
+						continue
+					}
+					if s.Fontsize >= GIANT_FONT_SIZE_CRITICAL {
+						return report.FailCritical("found a style with a big fontsize: " +
+							"consider reducing font size " +
+							"(it may be hard to identify big text as lyrics to actually sing)"), nil
+					}
+					if s.Fontsize >= GIANT_FONT_SIZE_WARNING {
+						warn = true
 					}
 				}
 			}

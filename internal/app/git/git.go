@@ -135,44 +135,42 @@ func (s GitSetup) Run(ctx context.Context) error {
 		}
 	}()
 	for _, repo := range s.Repositories {
-		select {
-		case <-ctx.Done():
-			return ctx.Err()
-		default:
-			wgRepos.Go(func() {
-				kara, err := GitModifiedKaras(ctx, repo.BaseDir)
-				if err != nil {
-					nbHasErr.Add(1)
-					if errors.Is(err, ErrNotAGitRepo) {
-						nbNotGit.Add(1)
-					} else if errors.Is(err, ErrUnresolvedMergeConflict) {
-						logrus.WithFields(logrus.Fields{
-							"repository": repo.Name,
-						}).WithError(err).Error("Merge conflict need to be resolved.")
-					} else if errors.Is(err, ErrParseError) {
-						logrus.WithFields(logrus.Fields{
-							"repository": repo.Name,
-						}).WithError(err).Error("Unexpected tokens in the output of porcelain `git status` command.")
-					} else {
-						logrus.WithFields(logrus.Fields{
-							"repository": repo.Name,
-						}).WithError(err).Error("Failed to read output of porcelain `git status` command.")
-					}
-					return
-				}
-				if len(kara) > 0 {
-					modified = true
-				}
-				for _, u := range kara {
-					p := filepath.Join(repo.BaseDir, "karaokes", u.String()+".kara.json")
-					s.StartWork()
-					wg.Go(func() {
-						defer s.StopWork()
-						app.RunOnFile(ctx, repo, p, pr)
-					})
-				}
-			})
+		if err := ctx.Err(); err != nil {
+			return err
 		}
+		wgRepos.Go(func() {
+			kara, err := GitModifiedKaras(ctx, repo.BaseDir)
+			if err != nil {
+				nbHasErr.Add(1)
+				if errors.Is(err, ErrNotAGitRepo) {
+					nbNotGit.Add(1)
+				} else if errors.Is(err, ErrUnresolvedMergeConflict) {
+					logrus.WithFields(logrus.Fields{
+						"repository": repo.Name,
+					}).WithError(err).Error("Merge conflict need to be resolved.")
+				} else if errors.Is(err, ErrParseError) {
+					logrus.WithFields(logrus.Fields{
+						"repository": repo.Name,
+					}).WithError(err).Error("Unexpected tokens in the output of porcelain `git status` command.")
+				} else {
+					logrus.WithFields(logrus.Fields{
+						"repository": repo.Name,
+					}).WithError(err).Error("Failed to read output of porcelain `git status` command.")
+				}
+				return
+			}
+			if len(kara) > 0 {
+				modified = true
+			}
+			for _, u := range kara {
+				p := filepath.Join(repo.BaseDir, "karaokes", u.String()+".kara.json")
+				s.StartWork()
+				wg.Go(func() {
+					defer s.StopWork()
+					app.RunOnFile(ctx, repo, p, pr)
+				})
+			}
+		})
 	}
 	return nil
 }

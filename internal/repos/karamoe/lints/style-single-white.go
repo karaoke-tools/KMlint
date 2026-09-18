@@ -66,22 +66,18 @@ func StyleSingleWhite() lint.Lint {
 
 			// list of used styles
 			for _, line := range KaraData.Lyrics[0].Events {
-				select {
-				case <-ctx.Done():
-					return report.Abort(), ctx.Err()
-				default:
-					if line.Type != lyrics.Dialogue {
-						continue
+				if err := ctx.Err(); err != nil {
+					return report.Abort(), err
+				}
+				if line.Type != lyrics.Dialogue {
+					continue
+				}
+				for _, style := range line.Styles() {
+					if err := ctx.Err(); err != nil {
+						return report.Abort(), err
 					}
-					for _, style := range line.Styles() {
-						select {
-						case <-ctx.Done():
-							return report.Abort(), ctx.Err()
-						default:
-							if !slices.Contains(styles, style) {
-								styles = append(styles, style)
-							}
-						}
+					if !slices.Contains(styles, style) {
+						styles = append(styles, style)
 					}
 				}
 
@@ -89,44 +85,42 @@ func StyleSingleWhite() lint.Lint {
 
 			// TODO: update this when multi-track drifting is released
 			for _, line := range KaraData.Lyrics[0].Styles {
-				select {
-				case <-ctx.Done():
-					return report.Abort(), ctx.Err()
-				default:
-					if !strings.HasPrefix(line, "Style: ") {
-						// ignore format line
-						continue
-					}
-					s, err := style.Parse(strings.TrimPrefix(line, "Style: "))
-					if err != nil {
-						return report.Abort(), err
-					}
-					if !slices.Contains(styles, s.Name) {
-						// unused style
-						unused++
-						continue
-					}
-					l_name := strings.ToLower(s.Name)
-					if strings.Contains(l_name, "-furigana") {
-						continue
-					}
-					choir := strings.Contains(l_name, "choir") ||
-						(s.Italic == "-1" && (s.MarginV == "80") || s.MarginV == "70") || // try to detect choirs
-						strings.Contains(l_name, "spoken") ||
-						strings.Contains(l_name, "dialogue") ||
-						strings.Contains(l_name, "rubyscript") // when mixing rubscript lines with normal lines (2 template scripts)
-					if s.SecondaryColour == colour.White {
-						if choir {
-							whiteChoirStyleCnt++
-						} else {
-							whiteUnknownStyleCnt++
-						}
+				if err := ctx.Err(); err != nil {
+					return report.Abort(), err
+				}
+				if !strings.HasPrefix(line, "Style: ") {
+					// ignore format line
+					continue
+				}
+				s, err := style.Parse(strings.TrimPrefix(line, "Style: "))
+				if err != nil {
+					return report.Abort(), err
+				}
+				if !slices.Contains(styles, s.Name) {
+					// unused style
+					unused++
+					continue
+				}
+				l_name := strings.ToLower(s.Name)
+				if strings.Contains(l_name, "-furigana") {
+					continue
+				}
+				choir := strings.Contains(l_name, "choir") ||
+					(s.Italic == "-1" && (s.MarginV == "80") || s.MarginV == "70") || // try to detect choirs
+					strings.Contains(l_name, "spoken") ||
+					strings.Contains(l_name, "dialogue") ||
+					strings.Contains(l_name, "rubyscript") // when mixing rubscript lines with normal lines (2 template scripts)
+				if s.SecondaryColour == colour.White {
+					if choir {
+						whiteChoirStyleCnt++
 					} else {
-						if choir {
-							nonWhiteChoirStyleCnt++
-						} else {
-							nonWhiteUnknownStyleCnt++
-						}
+						whiteUnknownStyleCnt++
+					}
+				} else {
+					if choir {
+						nonWhiteChoirStyleCnt++
+					} else {
+						nonWhiteUnknownStyleCnt++
 					}
 				}
 			}
