@@ -34,7 +34,7 @@ jobs:
       - name: Install depends
         run: go get .
       - name: Build
-        run: go build -v -trimpath -o kmlint-${{ steps.version.outputs.version }}-${{ matrix.os }}-${{ matrix.arch }}
+        run: go build -v -ldflags="-s -w" -trimpath -o kmlint-${{ steps.version.outputs.version }}-${{ matrix.os }}-${{ matrix.arch }}
       - if: matrix.os == 'windows'
         name: Add .exe extension
         run: mv kmlint-${{ steps.version.outputs.version }}-${{ matrix.os }}-${{ matrix.arch }}{,.exe}
