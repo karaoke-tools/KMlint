@@ -39,22 +39,22 @@ type Path struct {
 	Medias []string `yaml:"Medias"`
 }
 
-func ParseConf(file string) (*KmConfig, error) {
+func ParseConf(file string) (KmConfig, error) {
 	var conf KmConfig
 	path, err := filepath.Abs(file)
 	if err != nil {
-		return nil, err
+		return KmConfig{}, err
 	}
 	yamlFile, err := os.ReadFile(path)
 	if err != nil {
-		return nil, err
+		return KmConfig{}, err
 	}
 	if err := yaml.Unmarshal(yamlFile, &conf); err != nil {
-		return nil, err
+		return KmConfig{}, err
 	}
 	if conf.System.FrontendPort == 0 {
 		conf.System.FrontendPort = 1337 // default port
 	}
 
-	return &conf, nil
+	return conf, nil
 }

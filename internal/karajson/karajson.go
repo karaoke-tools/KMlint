@@ -6,24 +6,19 @@
 package karajson
 
 import (
-	"context"
 	"encoding/json/v2"
 	"os"
 	"time"
 )
 
-func FromFile(ctx context.Context, path string) (KaraJson, error) {
-	select {
-	case <-ctx.Done():
-		return KaraJson{}, ctx.Err()
-	default:
-	}
-	content, err := os.ReadFile(path)
+func ParseFile(path string) (KaraJson, error) {
+	file, err := os.OpenFile(path, os.O_RDONLY, 0)
 	if err != nil {
 		return KaraJson{}, err
 	}
+	defer file.Close()
 	var kara KaraJson
-	if err := json.Unmarshal(content, &kara); err != nil {
+	if err := json.UnmarshalRead(file, &kara); err != nil {
 		return KaraJson{}, err
 	}
 	return kara, nil

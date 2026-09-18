@@ -8,7 +8,7 @@ package ass
 import (
 	"bufio"
 	"context"
-	"io"
+	"os"
 	"strconv"
 	"strings"
 
@@ -16,7 +16,8 @@ import (
 )
 
 type Ass struct {
-	ScriptInfo              *ScriptInfo
+	Filename                string
+	ScriptInfo              ScriptInfo
 	Styles                  []string
 	Events                  []*lyrics.LyricsParser
 	Extradata               []string
@@ -25,20 +26,27 @@ type Ass struct {
 	assUnknownSectionsCount int
 }
 
-func Parse(ctx context.Context, lrc io.Reader) (*Ass, error) {
-	scanner := bufio.NewScanner(lrc)
-
-	state := assInit
-	ass := &Ass{
-		ScriptInfo: &ScriptInfo{},
-		Styles:     make([]string, 0),
-		Events:     make([]*lyrics.LyricsParser, 0),
+func New(filename string) *Ass {
+	return &Ass{
+		Filename: filename,
+		Styles:   make([]string, 0),
+		Events:   make([]*lyrics.LyricsParser, 0),
 	}
+}
+
+func (ass *Ass) Parse(ctx context.Context) error {
+	f, err := os.OpenFile(ass.Filename, os.O_RDONLY, 0)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+	scanner := bufio.NewScanner(f)
+	state := assInit
 	i := 0
 	for scanner.Scan() {
 		select {
 		case <-ctx.Done():
-			return nil, ctx.Err()
+			return ctx.Err()
 		default:
 			i++
 			line := scanner.Text()
@@ -90,18 +98,18 @@ func Parse(ctx context.Context, lrc io.Reader) (*Ass, error) {
 				case "PlayResX":
 					res, err := strconv.ParseUint(lineSplit[1], 10, 32)
 					if err != nil {
-						return nil, ErrMalformedFile
+						return ErrMalformedFile
 					}
 					ass.ScriptInfo.PlayResX = uint32(res)
 				case "PlayResY":
 					res, err := strconv.ParseUint(lineSplit[1], 10, 32)
 					if err != nil {
-						return nil, ErrMalformedFile
+						return ErrMalformedFile
 					}
 					ass.ScriptInfo.PlayResY = uint32(res)
 				case "ScaledBorderAndShadow":
 					if err := ass.ScriptInfo.SetScaledBorderAndShadow(lineSplit[1]); err != nil {
-						return nil, err
+						return err
 					}
 				}
 			case assStyles:
@@ -109,7 +117,7 @@ func Parse(ctx context.Context, lrc io.Reader) (*Ass, error) {
 			case assEvents:
 				lyr, err := lyrics.Parse(line)
 				if err != nil {
-					return nil, err
+					return err
 				}
 				ass.Events = append(ass.Events, lyr)
 			case assAegisubExtradata:
@@ -119,7 +127,7 @@ func Parse(ctx context.Context, lrc io.Reader) (*Ass, error) {
 		}
 	}
 	if err := scanner.Err(); err != nil {
-		return nil, err
+		return err
 	}
-	return ass, nil
+	return nil
 }

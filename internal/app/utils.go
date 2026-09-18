@@ -66,13 +66,13 @@ func SearchKmConfigFilePath() (string, error) {
 	return "", ErrConfigNotFound
 }
 
-func LoadConf() (*kmconfig.KmConfig, error) {
+func LoadConf() (kmconfig.KmConfig, error) {
 	path, err := SearchKmConfigFilePath()
 	if err != nil {
-		return nil, err
+		return kmconfig.KmConfig{}, err
 	}
 	if kmConfig, err := kmconfig.ParseConf(path); err == nil {
 		return kmConfig, nil
 	}
-	return nil, ErrConfigNotFound
+	return kmconfig.KmConfig{}, ErrConfigNotFound
 }
