@@ -6,7 +6,7 @@ require (
 	github.com/adrg/xdg v0.5.3
 	github.com/moby/term v0.5.2
 	github.com/sirupsen/logrus v1.10.2
-	github.com/urfave/cli/v3 v3.12.0
+	github.com/urfave/cli/v3 v3.13.0
 	go.yaml.in/yaml/v3 v3.0.5
 )
 
