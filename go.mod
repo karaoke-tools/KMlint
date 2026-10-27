@@ -1,6 +1,6 @@
 module github.com/karaoke-tools/kmlint
 
-go 1.27.2
+go 1.27.3
 
 require (
 	github.com/adrg/xdg v0.5.3
@@ -11,7 +11,7 @@ require (
 )
 
 require (
-	github.com/Azure/go-ansiterm v0.0.0-20261008234032-65faa4be4f89 // indirect
+	github.com/Azure/go-ansiterm v0.0.0-20261013165250-51075c6ea6bc // indirect
 	golang.org/x/mod v0.39.0 // indirect
 	golang.org/x/sync v0.22.0 // indirect
 	golang.org/x/sys v0.49.0 // indirect

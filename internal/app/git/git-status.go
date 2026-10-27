@@ -152,7 +152,9 @@ func GitModifiedKaras(ctx context.Context, path string) ([]uuid.UUID, error) {
 			kara = append(kara, k)
 		}
 	}
-
+	if err := scanner.Err(); err != nil {
+		return nil, err
+	}
 	if err := cmd.Wait(); err != nil {
 		return kara, err
 	}
