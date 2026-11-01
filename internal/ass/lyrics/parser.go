@@ -6,6 +6,7 @@
 package lyrics
 
 import (
+	"iter"
 	"regexp"
 	"strconv"
 	"strings"
@@ -172,14 +173,17 @@ func (l Line) KfLen() []int {
 
 var re_style = regexp.MustCompile(`(?:\\)r(.*?)(?:\\|\})`)
 
-func (l *LyricsParser) Styles() []string {
-	r := make([]string, 1)
-	r[0] = l.Style
-	for _, e := range l.Text.TagsSplit {
-		if f := re_style.FindStringSubmatch(e); f != nil {
-			r = append(r, f[1])
+func (l *LyricsParser) Styles() iter.Seq[string] {
+	return func(yield func(string) bool) {
+		if !yield(l.Style) {
+			return
+		}
+		for _, e := range l.Text.TagsSplit {
+			if f := re_style.FindStringSubmatch(e); f != nil {
+				if !yield(f[1]) {
+					return
+				}
+			}
 		}
 	}
-	return r
-
 }

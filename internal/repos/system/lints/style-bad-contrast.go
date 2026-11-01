@@ -57,7 +57,7 @@ func StyleBadContrast() lint.Lint {
 				if line.Type != lyrics.Dialogue {
 					continue
 				}
-				for _, style := range line.Styles() {
+				for style := range line.Styles() {
 					if err := ctx.Err(); err != nil {
 						return report.Abort(), err
 					}
