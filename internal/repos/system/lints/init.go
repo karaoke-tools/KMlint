@@ -33,6 +33,7 @@ func init() {
 		SingleCollection(),
 		SpaceBeforeDoublePunctuation(),
 		StyleBlackBorder(),
+		StyleBadContrast(),
 		StyleScale(),
 		TooManyLangTags(),
 		UnknownMediaContent(),

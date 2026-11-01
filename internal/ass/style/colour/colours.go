@@ -50,4 +50,5 @@ func FromString(s string) (Colour, error) {
 var (
 	Black = Colour{}
 	White = Colour{Blue: 0xFF, Green: 0xFF, Red: 0xFF}
+	Red   = Colour{Red: 0xFF} // Aegisub "Default" style
 )
