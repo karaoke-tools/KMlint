@@ -63,6 +63,7 @@ func StyleSingleWhite() lint.Lint {
 
 			// TODO: update this when multi-track drifting is released
 			styles := make([]string, 0, len(KaraData.Lyrics[0].Styles)-1)
+			spokenStyles := make([]string, 0, len(KaraData.Lyrics[0].Styles)-1)
 
 			// list of used styles
 			for _, line := range KaraData.Lyrics[0].Events {
@@ -76,11 +77,12 @@ func StyleSingleWhite() lint.Lint {
 					if err := ctx.Err(); err != nil {
 						return report.Abort(), err
 					}
-					if !slices.Contains(styles, style) {
+					if line.Effect == "spoken" && !slices.Contains(spokenStyles, style) {
+						spokenStyles = append(spokenStyles, style)
+					} else if !slices.Contains(styles, style) {
 						styles = append(styles, style)
 					}
 				}
-
 			}
 
 			// TODO: update this when multi-track drifting is released
@@ -96,7 +98,9 @@ func StyleSingleWhite() lint.Lint {
 				if err != nil {
 					return report.Abort(), err
 				}
-				if !slices.Contains(styles, s.Name) {
+
+				isSpoken := slices.Contains(spokenStyles, s.Name)
+				if !slices.Contains(styles, s.Name) && isSpoken {
 					// unused style
 					unused++
 					continue
@@ -105,22 +109,24 @@ func StyleSingleWhite() lint.Lint {
 				if strings.Contains(l_name, "-furigana") {
 					continue
 				}
-				choir := strings.Contains(l_name, "choir") ||
-					(s.Italic == "-1" && (s.MarginV == "80") || s.MarginV == "70") || // try to detect choirs
-					strings.Contains(l_name, "spoken") ||
-					strings.Contains(l_name, "dialogue") ||
-					strings.Contains(l_name, "rubyscript") // when mixing rubscript lines with normal lines (2 template scripts)
-				if s.SecondaryColour == colour.White {
-					if choir {
-						whiteChoirStyleCnt++
+				if !isSpoken {
+					choir := strings.Contains(l_name, "choir") ||
+						(s.Italic == "-1" && (s.MarginV == "80") || s.MarginV == "70") || // try to detect choirs
+						strings.Contains(l_name, "spoken") ||
+						strings.Contains(l_name, "dialogue") ||
+						strings.Contains(l_name, "rubyscript") // when mixing rubscript lines with normal lines (2 template scripts)
+					if s.SecondaryColour == colour.White {
+						if choir {
+							whiteChoirStyleCnt++
+						} else {
+							whiteUnknownStyleCnt++
+						}
 					} else {
-						whiteUnknownStyleCnt++
-					}
-				} else {
-					if choir {
-						nonWhiteChoirStyleCnt++
-					} else {
-						nonWhiteUnknownStyleCnt++
+						if choir {
+							nonWhiteChoirStyleCnt++
+						} else {
+							nonWhiteUnknownStyleCnt++
+						}
 					}
 				}
 			}
