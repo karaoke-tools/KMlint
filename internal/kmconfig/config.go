@@ -9,7 +9,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"go.yaml.in/yaml/v3"
+	"go.yaml.in/yaml/v4"
 )
 
 type KmConfig struct {
@@ -49,7 +49,7 @@ func ParseConf(file string) (KmConfig, error) {
 	if err != nil {
 		return KmConfig{}, err
 	}
-	if err := yaml.Unmarshal(yamlFile, &conf); err != nil {
+	if err := yaml.Load(yamlFile, &conf); err != nil {
 		return KmConfig{}, err
 	}
 	if conf.System.FrontendPort == 0 {
